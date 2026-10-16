@@ -26,6 +26,8 @@ website:
         text: Layout
       - href: modes.qmd
         text: Modes
+      - href: procedure.qmd
+        text: Procedure
     right:
       - icon: github
         href: https://github.com/madi-lts/roomANC

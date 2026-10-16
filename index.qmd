@@ -40,6 +40,7 @@ compete at these frequencies — see [Physics](physics.qmd) for why.
 | [Bill of Materials](bom.qmd) | Every critical component at three price points (Budget / Mid / Reference), the selected build, and supporting items. |
 | [Layout](layout.qmd) | Positioning plan for the real 14′7″ × 12′ room: a 6-mic perimeter error array, 2 subwoofers expanding to 4, the room-mode coincidences, near-field exclusion, the feedback question, and mic mounting. |
 | [Modes](modes.qmd) | Rectangular modal model: all 29 modes to 150 Hz vs. the measured tones, modeled pressure fields at 59.0 and 39.9 Hz with predicted nulls, and the numerical observability score of the 6-mic array. |
+| [Procedure](procedure.qmd) | The whole project as an ordered runbook: procurement, baseline campaign, FxLMS simulation, hardware bring-up, deployment, and acceptance, with milestones and per-step checkboxes. |
 
 ## Status
 

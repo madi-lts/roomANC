@@ -1,0 +1,187 @@
+---
+title: "Procedure"
+---
+
+The whole project as an ordered runbook: what to do, in what order, and how
+each step is checked off. Every step cites the page or spec requirement it
+comes from — this page adds no new design decisions, it sequences the ones
+already made. Checkboxes mirror the [Overview status
+list](index.qmd#status) at finer grain and get ticked as work lands.
+
+## Where things stand
+
+Done: the physics case ([Physics](physics.qmd)), the numbered requirements
+and controller design ([Specification](spec.qmd)), the selected build
+([BOM](bom.qmd#selected-build)), the positioning plan
+([Layout](layout.qmd)), the rectangular modal model with the 6-mic
+observability check ([Modes](modes.qmd)), a first-pass tone census, and the
+manifest-driven campaign tooling
+([Measurements](measurements.qmd)). Not started: everything that needs
+hardware — no equipment is owned yet, including the UMIK-1 measurement mic.
+
+Dependency structure: Phase 1 (baseline) needs only the UMIK-1; Phase 2
+(simulation) needs no hardware at all, so **Phases 1 and 2 run in
+parallel**, and Phase 2 can start today. Phase 3 needs the full selected
+build plus the Phase 2 code; Phases 4–5 are strictly sequential after that.
+
+### Milestones
+
+| | Milestone | Exit criterion |
+|---|---|---|
+| M1 | Hardware in hand | Every selected-build and supporting item received and inventory-checked |
+| M2 | Baseline campaign complete | Calibrated tone census with drift statistics, level-vs-position map, open-window path split — all committed |
+| M3 | Cancellation in simulation | ≥ 20 dB at each synthetic tone, stable under R4-class drift, watchdog verified |
+| M4 | First cancellation on hardware | Audible, measured reduction of the 59.0 Hz tone, single channel |
+| M5 | Full system converged | Multichannel loop stable on the installed 6-mic / 2-sub array |
+| M6 | Acceptance passed | Every row of the [verification table](spec.qmd#measurement-and-verification-plan) signed off |
+
+## Phase 0 — Procurement (→ M1)
+
+Target: the [selected build](bom.qmd#selected-build) plus [supporting
+items](bom.qmd#supporting-items). Prices on the BOM are October 2026
+street prices; re-check before ordering.
+
+- [ ] **0.1** Order the UMIK-1 **first and separately** — it is the only
+  item Phase 1 waits on, and it ships independently of the rest.
+- [ ] **0.2** Measure the actual cable runs along the baseboards per the
+  [layout figure](layout.qmd#fig-layout) before ordering cables (the BOM
+  lengths are estimates); order all four TRS runs at full length even for
+  the 2-sub start, so the S2/S3 expansion needs no re-cabling.
+- [ ] **0.3** Order the remaining build: NUC 14 Essential (or N100/N150
+  substitute), UMC1820 interface, 2× Eris Sub 8BT, 6× ECM8000, stands,
+  pads, loom, tape.
+- [ ] **0.4** On arrival, inventory-check: download the UMIK-1's serialized
+  calibration file from miniDSP and commit it to `data/`; verify the
+  UMC1820 supplies +48 V phantom on all banks and that each ECM8000
+  produces signal; verify each sub's TRS input and polarity switch.
+
+## Phase 1 — Baseline measurement campaign (needs UMIK-1; → M2)
+
+The three baseline measurements of the [verification
+plan](spec.qmd#measurement-and-verification-plan), run through
+[`scripts/analyze_campaign.py`](https://github.com/madi-lts/roomANC/blob/master/scripts/analyze_campaign.py)
+from a manifest CSV (one row per recording: file, tag, position in the
+[layout](layout.qmd) room frame, calibration file). Raw WAVs stay out of
+the repo (archived separately); manifests, reports and maps are committed.
+
+- [ ] **1.1 Calibrated tone census** (`spectra` subcommand). Multi-minute
+  recording at pillow height ($x,y,z$ ≈ M1/M2's position, 0.65 m);
+  Welch PSD at ≥ 0.1 Hz resolution. Deliverables: absolute SPL of each
+  tone, the broadband floor, and drift statistics
+  $\hat{\omega}_k(t)$ for the tone tracker (R4's ±2 %, ≤ 1 Hz/min
+  envelope is confirmed or revised here). Repeat at 2–3 times of day to
+  catch HVAC duty-cycle states.
+- [ ] **1.2 Level-vs-position map** (`map` subcommand). Per-tone
+  band-integrated level on a ~0.5 m grid at two heights (0.65 m pillow
+  plane and ~1.4 m). Deliverable: the measured antinode/null geometry.
+- [ ] **1.3 Open-window A/B** (`ab` subcommand). Interleaved
+  window-closed/open recordings; if the tones barely change, the path is
+  structure-borne ([physics](physics.qmd#structure-borne-path)) —
+  evidence for the landlord track either way (R10).
+- [ ] **1.4 Validate the modal model.** Overlay 1.2's map on the
+  [Modes](modes.qmd) pressure fields: do the predicted (1,1,0) and
+  (0,0,1) null surfaces appear, and how far have compliant walls pulled
+  the eigenfrequencies below the rigid-wall values? Update the model's
+  $L_x, L_y, L_z$-effective or damping if needed; re-check the 6-mic
+  observability conclusion.
+- [ ] **1.5** Update [Measurements](measurements.qmd) with the calibrated
+  census and map; revise the mode-coincidence table on
+  [Layout](layout.qmd) if the measured eigenfrequencies moved.
+
+## Phase 2 — FxLMS in simulation (no hardware; → M3)
+
+Build the controller against the [spec's signal-processing
+design](spec.qmd#signal-processing-design) with simulated plants, so every
+control-logic bug is found before a speaker is attached.
+
+- [ ] **2.1 Single-channel adaptive-notch FxLMS.** Quadrature-pair
+  reference per tone, two weights per (tone, actuator); synthetic
+  secondary path $\hat{S}(z)$ with realistic delay and phase. Verify
+  convergence and the ±90° phase-error stability boundary empirically.
+- [ ] **2.2 Tone tracker (R4).** PLL or peak-interpolated FFT tracker;
+  feed it synthetic drift matching 1.1's measured statistics (or the
+  spec envelope until those exist); verify reconvergence < 10 s after a
+  frequency step.
+- [ ] **2.3 Safety logic (R6, R8).** Per-channel output limiter; watchdog
+  mute on error power > 2× converged baseline for > 0.5 s, acting within
+  100 ms. Test by corrupting the sign of $\hat{S}$ mid-run.
+- [ ] **2.4 Multichannel extension.** $K$ tones × $L$ actuators × $M$
+  mics using the [modal model](modes.qmd) as the plant: eigenfunction sums
+  give physically-shaped $S_{ml}(z)$ for the real sub and mic positions.
+  Verify global (not just at-the-mics) reduction on a simulated grid.
+- [ ] **2.5 Simulated identification (R7).** Normalized-LMS system ID with
+  the coherence gate (≥ 0.95 over 30–150 Hz) against the modal plant,
+  completing in ≤ 5 simulated minutes.
+
+## Phase 3 — Hardware bring-up (needs M1 + Phase 2; → M4)
+
+- [ ] **3.1 Platform setup.** Linux with `PREEMPT_RT` on the NUC;
+  PipeWire/JACK at the interface's native rate with the controller
+  decimating to its 2–4 kHz effective rate; verify a stable xrun-free
+  round-trip through the UMC1820.
+- [ ] **3.2 I/O verification.** Each mic input and line output
+  individually: channel map, gains staged, phantom confirmed, loopback
+  latency measured (absorbed into $\hat{S}$, but log it).
+- [ ] **3.3 Secondary-path identification on hardware (R7).** One sub, one
+  mic on a stand: run the Phase 2.5 routine with low-level noise
+  injection with the drone present; accept on the coherence gate.
+- [ ] **3.4 Single-channel cancellation (M4).** Cancel the 59.0 Hz tone at
+  one error mic; confirm with an independent UMIK-1 measurement, not just
+  the loop's own error signal. Exercise the watchdog on real hardware
+  before any unattended run.
+
+## Phase 4 — Full deployment (→ M5)
+
+Install exactly per [Layout](layout.qmd); the geometry rules there
+(corner loading, the 1 m near-field exclusion, nodal-line avoidance,
+height diversity) are load-bearing, not suggestions.
+
+- [ ] **4.1 Subs.** S1 + S4 corners, driver facing the corner, isolation
+  pads, crossover at maximum, polarity 0°; settings taped and untouched
+  thereafter.
+- [ ] **4.2 Mics.** The six [listed positions](layout.qmd#error-microphones-a-6-mic-perimeter-array)
+  with the [mounting rules](layout.qmd#error-microphones-mounting): foam
+  at every clip, tape-marked footprints, cables loomed and cat-proofed.
+- [ ] **4.3 Full identification.** The complete $M \times L = 6 \times 2$
+  secondary-path bank via the R7 routine; check conditioning against the
+  modal-model prediction ($\operatorname{cond}(\Psi) \le 6.6$).
+- [ ] **4.4 Multichannel convergence (M5).** Bring up the full loop;
+  confirm stable convergence on all targeted tones and that the room,
+  not just the mic positions, got quieter (spot-check with the UMIK-1).
+
+## Phase 5 — Acceptance (→ M6)
+
+System active vs. inactive, interleaved A/B over ≥ 10 min each, per the
+[verification table](spec.qmd#measurement-and-verification-plan).
+
+- [ ] **5.1** R1/R2: per-tone SPL at pillow height and ≥ 6 grid points;
+  ≥ 10 dB at ≥ 75 % of points (goal 20 dB).
+- [ ] **5.2** R3: third-octave comparison 20 Hz–8 kHz; no off-tone band up
+  > 3 dB.
+- [ ] **5.3** R4: forced tone step and overnight natural drift;
+  reconvergence < 10 s.
+- [ ] **5.4** R6/R8: door, walking, and deliberate divergence tests; mute
+  within 100 ms; limiter ceiling verified with the UMIK-1.
+- [ ] **5.5** R7: identification ≤ 5 min, coherence ≥ 0.95 in band.
+- [ ] **5.6** R10: export calibrated before/after spectra and level
+  histories; check calibration against the UMIK-1 certificate.
+- [ ] **5.7 Expansion decision.** If the converged residual at any tone
+  keeps a spatial pattern the diagonal pair cannot null (error mics low,
+  grid points between them high), install S2 + S3 — the cabling is
+  already laid — re-run 4.3, and repeat 5.1.
+- [ ] **5.8** Update the [Overview status list](index.qmd#status) and the
+  Measurements page with the acceptance results.
+
+## Ongoing operation
+
+- **Re-identification (R7)** after any mic or sub move, bump, or large
+  furniture change — a batted-off mic is a re-ID event at best and a
+  watchdog mute at worst. The tape-marked footprints make "moved" a
+  checkable fact.
+- **Evidence logging (R10):** keep the calibrated before/after record
+  growing; it serves the landlord track regardless of how well the ANC
+  performs.
+- **Failure triage:** deep nulls at the error mics with poor grid-point
+  attenuation is the observability/near-field signature — re-spread the
+  mics or expand to 4 subs ([Layout acceptance rule](layout.qmd#acceptance));
+  it is not a loop-gain problem.
