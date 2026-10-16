@@ -22,10 +22,13 @@ R_NF = 0.93  # near-field exclusion radius ~ lambda/2pi at 59 Hz
 SUBS = {"S1": (0.35, 0.35, True), "S2": (4.09, 0.35, False),
         "S3": (0.35, 3.31, False), "S4": (4.09, 3.31, True)}
 # (x, y, height) — all mics at the room perimeter (walls are pressure
-# antinodes); min distance to any sub corner 1.02 m (M4-S3)
-MICS = {"M1": (1.55, 3.30, 0.65), "M2": (2.15, 3.30, 0.65),
+# antinodes); min distance to any sub corner 1.02 m (M4-S3).
+# M1/M2 are displaced from the pillows; the pillow positions V1/V2 are
+# virtual sensing points (see layout.qmd and scripts/virtual_sensing.py)
+MICS = {"M1": (1.55, 3.40, 1.10), "M2": (2.60, 3.40, 0.65),
         "M3": (4.25, 1.45, 1.10), "M4": (0.20, 2.30, 1.75),
         "M5": (2.60, 0.30, 1.20), "M6": (2.95, 3.40, 2.10)}
+VIRTUAL = {"V1": (1.55, 3.30, 0.65), "V2": (2.15, 3.30, 0.65)}
 
 fig, (ax, axe) = plt.subplots(1, 2, figsize=(15, 7.2),
                               gridspec_kw={"width_ratios": [1.25, 1]})
@@ -57,7 +60,7 @@ for name, (x, y, p1) in SUBS.items():
     ax.text(x + dx, y + dy, name, ha="center", va="center",
             color=ACCENT, fontsize=12, fontweight="bold")
 
-LABEL_OFFSETS = {"M1": (-0.12, -0.28, "right"), "M2": (0.12, -0.28, "left"),
+LABEL_OFFSETS = {"M1": (-0.12, -0.28, "right"), "M2": (-0.14, -0.28, "right"),
                  "M3": (-0.16, -0.05, "right"), "M4": (0.16, -0.05, "left"),
                  "M5": (0.18, 0.10, "left"), "M6": (0.16, -0.30, "left")}
 for name, (x, y, h) in MICS.items():
@@ -65,13 +68,18 @@ for name, (x, y, h) in MICS.items():
     dx, dy, ha = LABEL_OFFSETS[name]
     ax.annotate(f"{name} ({h})", xy=(x, y), xytext=(x + dx, y + dy), ha=ha,
                 color=SERIES, fontsize=10, fontweight="bold")
+for name, (x, y, h) in VIRTUAL.items():
+    ax.plot([x], [y], "x", ms=10, color=INK, mew=2.2)
+    ax.annotate(name, xy=(x, y), xytext=(x - 0.05, y - 0.30), ha="center",
+                color=INK, fontsize=10, fontweight="bold")
 
 ax.text(0.02, -0.30, "filled squares: subwoofers, phase 1 (diagonal pair)",
         color=ACCENT, fontsize=9.5)
 ax.text(0.02, -0.46, "dashed squares: phase-2 expansion to 4 subwoofers",
         color=ACCENT, fontsize=9.5)
-ax.text(0.02, -0.62, "dots: error mics, (height m); dashed arcs: near-field "
-        "exclusion r ≈ 0.93 m", color=INK, fontsize=9.5)
+ax.text(0.02, -0.62, "dots: error mics, (height m); ×: virtual pillow "
+        "points V1/V2 (h = 0.65 m); dashed arcs: near-field exclusion "
+        "r ≈ 0.93 m", color=INK, fontsize=9.5)
 ax.set_xlim(-0.25, LX + 0.25)
 ax.set_ylim(-0.78, LY + 0.25)
 ax.set_aspect("equal")

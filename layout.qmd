@@ -127,24 +127,29 @@ baseboard cable runs. Positions (origin at S1's corner):
 
 | Mic | $x$ (m) | $y$ (m) | $h$ (m) | Where |
 |---|---:|---:|---:|---|
-| M1 | 1.55 | 3.30 | 0.65 | head wall, pillow left (behind headboard) |
-| M2 | 2.15 | 3.30 | 0.65 | head wall, pillow right |
+| M1 | 1.55 | 3.40 | 1.10 | head wall, above pillow left (0.46 m from V1) |
+| M2 | 2.60 | 3.40 | 0.65 | head wall, outboard of pillow right (0.46 m from V2) |
 | M3 | 4.25 | 1.45 | 1.10 | right wall |
 | M4 | 0.20 | 2.30 | 1.75 | left wall, above $H/2$ |
 | M5 | 2.60 | 0.30 | 1.20 | bottom wall, standing on the dresser |
 | M6 | 2.95 | 3.40 | 2.10 | head wall, tall stand right of bed |
+| V1 | 1.55 | 3.30 | 0.65 | **virtual point**, pillow left (no hardware) |
+| V2 | 2.15 | 3.30 | 0.65 | **virtual point**, pillow right (no hardware) |
 
 The generating rules:
 
-1. **Boundary placement with two exceptions-by-construction.** Perimeter
+1. **Boundary placement, with the pillows sensed virtually.** Perimeter
    mics null the *controllable* modal field globally — zeroing wall
-   pressure zeroes the mode amplitudes. But the *uncontrollable* residual
+   pressure zeroes the mode amplitudes. The *uncontrollable* residual
    (structure-borne direct radiation, higher-order content) is minimized
-   wherever the mics are; keeping the pillow pair M1/M2 at the head wall
-   parks that residual's minimum at your head as well, at no aesthetic
-   cost since the bed head is already against a wall.
+   wherever the error signal is defined — and that is the two **virtual
+   points V1/V2 at the pillows**, not the physical mics: the controller
+   minimizes the pillow pressure estimated from the real array (see
+   [virtual error sensing](#virtual-error-sensing-at-the-pillows)), so no
+   hardware needs to live on the bed.
 2. **≥ 1 m from every (present or future) woofer corner** — verified
-   numerically: minimum over all pairs is 1.02 m (M4–S3).
+   numerically: minimum over all pairs is 1.02 m (M4–S3); the relocated
+   M1 keeps 1.20 m to S3.
 3. **Off the tangential nodal lines.** A wall midline is a null of every
    odd mode along that wall — the resonant (1,1,0) included — so no mic
    sits near $x = L_x/2 = 2.22\ \mathrm{m}$ on the top/bottom walls or
@@ -166,8 +171,57 @@ matrix $\Psi_{mn} = \psi_n(\mathbf{x}_m)$ square-ish — one bad position and
 a mode goes nearly unobserved, the "quiet at the mics, loud between them"
 failure. The [modal model](modes.qmd#observability-of-the-6-mic-array)
 scores this layout's $\Psi$ conditioning numerically — full rank with
-$\operatorname{cond}(\Psi) \le 6.6$ at every controlled tone; mic count
+$\operatorname{cond}(\Psi) \le 7.1$ at every controlled tone; mic count
 stands at six.
+
+## Virtual error sensing at the pillows
+
+The quiet zone should form at your head, but hardware on the bed is
+fragile (sleeper, cat, laundry). The **remote microphone technique**
+decouples the two: the physical mics sit on fixed wall stands, and the
+controller minimizes the *estimated* pressure at the pillow points V1/V2.
+Because the disturbance is tonal, the estimator per tracked tone $f$ is
+not a filter but a single complex weight vector $\mathbf{w}(f) \in
+\mathbb{C}^{M}$ per virtual point:
+$$
+\hat e_v(f) \;=\; \mathbf{w}^{\mathsf H}(f)\, \mathbf{e}(f),
+$$
+where $\mathbf{e}(f)$ is the vector of complex error-mic amplitudes at the
+tone (from the controller's quadrature demodulators). A **calibration
+pass** with a temporary mic lying at each pillow measures, at each tone,
+(a) the secondary paths from each sub to the virtual points,
+$\hat S_{vl}$, and (b) $\mathbf{w}$ by least squares against the live
+drone; FxLMS then runs on $\hat e_v$ with $\hat S_{vl}$ in place of the
+per-mic quantities. Minutes of data per tone.
+
+How far the physical mics may sit from the pillows is bounded by the
+Monte Carlo in
+[`scripts/virtual_sensing.py`](https://github.com/madi-lts/roomANC/blob/master/scripts/virtual_sensing.py):
+fit $\mathbf{w}$ on random modal excitations (all modes to 225 Hz), test
+on fresh ones — the residual is the ceiling on suppression at the pillow
+when the modal mix changes between calibration and operation (for a
+stationary source the mapping is exact at any distance):
+
+| Pair displacement (m) | 59 Hz median error | ceiling (dB) | 39.9 Hz error |
+|---:|---:|---:|---:|
+| 0.0 | 0.015 | −36 | 0.011 |
+| 0.3 | 0.077 | −22 | 0.054 |
+| 0.6 | 0.160 | −16 | 0.113 |
+| 1.0 | 0.332 | −10 | 0.183 |
+| 1.5 | 0.474 | −6 | 0.234 |
+
+Tone drift of 1 Hz and a 3 % downshift of every eigenfrequency (compliant
+walls, temperature) degrade these only marginally. The adopted M1/M2
+positions are displaced **0.46 m** from their virtual points, giving a
+**−20 dB ceiling at 59 Hz** — comfortably under the R2 target band.
+Rules of use:
+
+- Calibrate with the bed occupied if practical: a person is a weak
+  scatterer at $ka \sim 0.2$, but calibration should match operation.
+- Re-fit $\mathbf{w}$ and $\hat S_{vl}$ on every R7 event, and whenever an
+  occasional spot-check with a mic at the pillow shows the virtual
+  residual diverging from the real one; seasonally otherwise
+  (temperature moves eigenfrequencies by only ~0.1 Hz/K at 60 Hz).
 
 ## Error microphones: mounting
 
@@ -190,11 +244,13 @@ gradient capsules. What remains:
   becomes part of the identified $\hat{S}$: tape-mark each stand's
   footprint and re-run identification after any move or bump (R7).
 - **Rental + cat.** Nothing fastens to walls — "at the wall" means a stand
-  *beside* the wall. M1/M2 ride short boom arms clamped to the bed frame
-  (through foam) or short weighted stands behind the headboard; M5 stands
-  on the dresser (foam pad underneath); M3, M4 and M6 are weighted-base
-  stands tight against their walls, where they're out of the walkable
-  floor and hardest for the cat to reach. Leave no dangling cable slack
+  *beside* the wall. M1/M2 are weighted-base stands tight against the head
+  wall beside the bed (no longer on the bed frame — [virtual
+  sensing](#virtual-error-sensing-at-the-pillows) moved the hardware off
+  the bed, which also removes the shaking-headboard vibration path); M5
+  stands on the dresser (foam pad underneath); M3, M4 and M6 are
+  weighted-base stands tight against their walls, where they're out of
+  the walkable floor and hardest for the cat to reach. Leave no dangling cable slack
   (coil and tie at the stand base) and run the short baseboard cable runs
   through split-loom or cord covers — a batted-off mic is a
   re-identification event at best (R7) and a watchdog mute at worst (R8).
