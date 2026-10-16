@@ -6,7 +6,10 @@ Every critical component is offered at three price points. **Budget** gets a
 working single-tone canceller for the cost of a nice dinner party; **Mid** is
 the recommended build meeting every spec requirement with margin;
 **Reference** is the no-compromise version. Tiers mix freely — the categories
-are independent.
+are independent. The plan actually being built is the
+[**Selected build**](#selected-build) below, with its
+[supporting items](#supporting-items); equipment placement is on the
+[Layout](layout.qmd) page.
 
 US street prices **as of October 2026**, from the linked retailer/aggregator
 listings; prices drift, so re-check before ordering. All actuators are
@@ -130,6 +133,80 @@ The **Mid tier is the recommended build**: it meets every requirement in the
 [specification](spec.qmd) with margin, and the two SB-1000 Pros are
 unembarrassing furniture if the landlord track succeeds and the ANC system
 retires into a stereo.
+
+## Selected build
+
+The decided plan, fixed around a 4-in/4-out interface, four woofers at
+≤ $250 each, and reuse of equipment on hand. Positions and mounting are on
+the [Layout](layout.qmd) page.
+
+| Component | Product | Qty | Unit | Ext. |
+|---|---|:---:|---:|---:|
+| Controller | Existing laptop/PC, Linux + PipeWire/JACK | 1 | $0 | $0 |
+| Audio interface | [Behringer UMC404HD](https://equipboard.com/items/behringer-u-phoria-umc404hd) — 4 mic/line in (48 V), 4 balanced TRS out | 1 | $139 | $139 |
+| Subwoofers | [PreSonus Eris Sub 8BT](https://www.sweetwater.com/store/detail/ErisStuSub8BT--presonus-eris-sub-8bt-8-inch-powered-bluetooth-studio-subwoofer) — 8″, 50 W RMS, 30–200 Hz | 4 | $200–250 | $800–1,000 |
+| Error mics | [Samson C02](https://www.markertek.com/product/sam-co2/samson-c02-pencil-cardioid-condenser-microphones-pair) — 2 on hand + 1 new matched pair | 4 | — | ~$150 |
+| Measurement mic | [miniDSP UMIK-1](https://equipboard.com/items/minidsp-umik-1) (calibration + evidence, R10) | 1 | ~$108 | ~$108 |
+| Reference | Synthesized (tracked-tone oscillator) | — | $0 | $0 |
+| **Total (key components)** | | | | **≈ $1,200–1,400** |
+
+Why these choices fit:
+
+- **Eris Sub 8BT.** Its 30–200 Hz band covers every measured line (59.0,
+  105.8, 117.9, 120.0 Hz) with full headroom at the 59 Hz fundamental; the
+  **balanced TRS input** takes the UMC404HD's TRS outputs directly with no
+  adapters and best hum immunity; it has a polarity switch, and the
+  variable low-pass reaches 130 Hz (set to maximum and never touched after
+  secondary-path ID — note this soft-caps control authority between 130 and
+  150 Hz, acceptable since no measured tone lives there). Street price
+  [$249.95 at Sweetwater](https://www.sweetwater.com/store/detail/ErisStuSub8BT--presonus-eris-sub-8bt-8-inch-powered-bluetooth-studio-subwoofer),
+  seen at [$199.99](https://electronicexpress.com/catalog/565780/presonus-2777500125-eris-sub-8bt-8-studio-monitor-subwoofer-bluetooth).
+  Caveats: it is ported (port noise under sustained tonal drive — watch for
+  broadband error-floor rise at high output); the **front cone is exposed
+  (not cat-proof as shipped)** — mitigated by facing the driver into the
+  corner, which is acoustically free at $\lambda \approx 5.8$ m (see
+  [Layout](layout.qmd#subwoofers-four-corners-floor-level)); and the
+  Power Saver auto-standby (engages after ~40 min of silence) must be
+  verified to wake cleanly when the HVAC cycles back on — if it misbehaves,
+  a −60 dBFS pilot dither on each output keeps the amps awake.
+  Grille-protected alternatives at the price, if cat-proofing wins over the
+  TRS convenience: [Dayton SUB-1200](https://www.parts-express.com/Dayton-Audio-SUB-1200-Powered-Subwoofer-300-629) (~$200, cloth grille) or
+  [BIC America F12](https://www.ooberpad.com/blogs/audio-video-tips/ooberpad-india-reviews-the-bic-america-formula-f12-powered-subwoofer) (~$250 street when in stock, removable grille).
+- **Samson C02 ×4.** Reusing the owned pair and adding one more
+  [matched pair (~$140–180)](https://www.markertek.com/product/sam-co2/samson-c02-pencil-cardioid-condenser-microphones-pair)
+  works: error mics need only stable sensitivity and SNR at the tones, the
+  C02's 40 Hz–20 kHz band comfortably contains 59 Hz, and a ~56 dB tone
+  dwarfs its 22 dB(A) self-noise. The cardioid pattern mixes in a
+  pressure-gradient component, which is harmless so long as orientation is
+  fixed — the mounting rules on the
+  [Layout](layout.qmd#error-microphones-mounting) page handle this, plus
+  the vibration isolation a pressure-gradient capsule particularly needs.
+  The UMC404HD supplies the required +48 V phantom on all four inputs.
+- **UMC404HD.** Exactly 4 phantom-powered mic inputs for the error array
+  and 4 balanced line outputs for the subs, one clock domain for the whole
+  loop, class-compliant under Linux. The UMIK-1 is USB and independent, so
+  it costs no interface channels.
+
+## Supporting items
+
+Necessary for the build but not key components. Cable lengths assume the
+corner runs of the [nominal layout](layout.qmd) (interface near the desk);
+measure before ordering.
+
+| Item | Qty | Est. | Notes |
+|---|:---:|---:|---|
+| XLR cables, 10–25 ft mix | 4 | $50 | error mics → interface; one per mic, routed along walls |
+| Balanced ¼″ TRS–TRS cables, 10–25 ft mix | 4 | $60 | interface outs → sub TRS inputs |
+| Weighted round-base mic stands | 2 | $60 | M4 free-standing; one spare/pillow-side |
+| Clamp-on boom arms | 2 | $40 | M1/M2 on bed frame (through foam), M3 on desk |
+| Pencil-mic shock mounts or foam clip pads | 4 | $30 | suspension $f_0 \lesssim 10$ Hz for ~−17 dB body vibration at 59 Hz |
+| Subwoofer isolation pads | 4 | $50 | floor decoupling: rental, neighbors, structure-borne re-injection |
+| Split-loom / floor cord covers | — | $25 | cat-proofing all floor runs |
+| Power strips + extension cords | 2 | $25 | one per sub pair; interface + controller at desk |
+| Gaffer tape, zip ties, marking tape | — | $15 | position/rotation marks at every mic and sub (re-ID discipline, R7) |
+| **Subtotal** | | **≈ $355** | |
+
+**Selected build grand total ≈ $1,550–1,750** including supporting items.
 
 ## Passive adjuncts (any tier)
 

@@ -21,6 +21,8 @@ website:
         text: Specification
       - href: bom.qmd
         text: Bill of Materials
+      - href: layout.qmd
+        text: Layout
     right:
       - icon: github
         href: https://github.com/madi-lts/roomANC
