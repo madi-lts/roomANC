@@ -1,0 +1,153 @@
+---
+title: "System specification"
+---
+
+## Scope and objectives
+
+This system actively cancels **stable tonal components below ~150 Hz** of an
+HVAC-generated drone in a single room (bedroom/living space, volume
+$V \approx 50\ \mathrm{m^3}$), operating entirely below the room's Schroeder
+frequency so that cancellation is global rather than local (see
+[Physics](physics.qmd)). It makes no claim on broadband noise; the broadband
+floor is addressed by cheap passive adjuncts and the landlord track.
+
+Everything is freestanding and tenant-removable. Nothing attaches to the
+building fabric beyond acoustic caulk and weatherstripping.
+
+## Requirements
+
+Each requirement is numbered and testable; the [verification
+plan](#measurement-and-verification-plan) maps each to a test.
+
+| ID | Requirement |
+|----|-------------|
+| R1 | **Frequency range.** The system shall cancel tonal components in 30–150 Hz. |
+| R2 | **Attenuation.** ≥ 10 dB reduction in sound pressure level at each targeted tone, measured at pillow height, over ≥ 75 % of the occupied zone (bed + desk area). Goal: 20 dB. |
+| R3 | **No spillover.** The A-weighted level in any third-octave band outside the targeted tones shall not increase by more than 3 dB with the system active ("waterbed" limit). |
+| R4 | **Tone tracking.** The controller shall maintain R2 under source frequency drift of ±2 % at drift rates up to 1 Hz/min, reconverging within 10 s after a step change in tone frequency. |
+| R5 | **Channel counts.** ≥ 2 actuator channels (goal 4), ≥ 4 error microphones (goal 8), ≥ 1 reference input (physical or synthesized). |
+| R6 | **Stability.** The adaptive loop shall remain stable under secondary-path perturbations typical of room-use changes (door open/closed, person moving); divergence shall trigger automatic output mute within 100 ms (see R8). |
+| R7 | **Secondary-path identification.** The system shall provide an automated identification mode measuring all actuator→microphone transfer functions, with a coherence check, completing in ≤ 5 min; re-identification shall be user-triggerable at any time. |
+| R8 | **Safety.** Hard output limiter per actuator channel; total in-room contribution from the system capped at 85 dB SPL; watchdog mute on error-power divergence (error power > 2× converged baseline for > 0.5 s). |
+| R9 | **Tenant constraints.** All equipment freestanding; no fasteners into building fabric; total actuator footprint compatible with a furnished bedroom. |
+| R10 | **Evidence logging.** The system shall log calibrated before/after spectra and time-stamped level histories suitable for the landlord-escalation track. |
+
+## Architecture
+
+```{mermaid}
+flowchart LR
+    HVAC["HVAC source<br/>(rooftop units, pumps)"] -->|"primary path P(z)"| ROOM["Room modal field"]
+    HVAC -.->|"vibration"| REF["Reference sensor:<br/>accelerometer on wall/window<br/>OR synthesized reference<br/>(tracked-tone oscillator)"]
+    REF -->|"x(n)"| CTRL["Multichannel FxLMS controller<br/>(low-latency DSP platform)"]
+    CTRL -->|"y_l(n), L channels"| AMP["Power amps +<br/>2–4 corner subwoofers"]
+    AMP -->|"secondary paths S_ml(z)"| ROOM
+    ROOM -->|"e_m(n), M channels"| MICS["4–8 error microphones"]
+    MICS --> CTRL
+    CTRL --> LOG["Spectrum + level logging<br/>(evidence track)"]
+```
+
+- **Actuators:** 2–4 sealed subwoofers placed in room corners, where they
+  couple maximally to all modes.
+- **Error sensors:** 4–8 microphones distributed through the occupied zone;
+  minimizing the sum of squared pressures at well-spread points approximates
+  minimizing total modal energy in this regime.
+- **Reference:** either an accelerometer on the wall/window facing the units,
+  or a synthesized reference from a tracked tone frequency. Because the noise
+  is tonal and hence predictable, **causality is not a constraint** — the
+  synthesized reference is preferred (perfect coherence, no sensor needed).
+- **Controller:** multichannel filtered-x LMS on a low-latency platform
+  (Bela, Raspberry Pi/mini-PC with a real-time audio stack, or dedicated DSP).
+
+## Signal processing design
+
+### Multichannel FxLMS
+
+Symbols: $n$ = sample index; $x(n)$ = reference signal; $L$ = number of
+actuators, indexed $l$; $M$ = number of error microphones, indexed $m$;
+$\mathbf{w}_l(n) \in \mathbb{R}^{N_w}$ = adaptive FIR weight vector of length
+$N_w$ for actuator $l$; $\mathbf{x}(n) = [x(n), x(n-1), \dots,
+x(n-N_w+1)]^{\mathsf T}$ = reference tap vector; $d_m(n)$ = primary
+disturbance at microphone $m$; $s_{ml}(n)$ = impulse response of the
+**secondary path** $S_{ml}(z)$ from actuator $l$ to microphone $m$
+(amplifier → speaker → room → mic → ADC); $\hat{s}_{ml}(n)$ = its measured
+estimate; $\mu$ = adaptation step size; $*$ = convolution.
+
+Each actuator outputs
+$$
+y_l(n) = \mathbf{w}_l^{\mathsf T}(n)\, \mathbf{x}(n),
+$$
+each microphone measures
+$$
+e_m(n) = d_m(n) + \sum_{l=1}^{L} \left(s_{ml} * y_l\right)(n),
+$$
+and the weights adapt along the negative stochastic gradient of
+$\sum_m e_m^2(n)$ using the **filtered reference**
+$\mathbf{x}'_{ml}(n) = (\hat{s}_{ml} * \mathbf{x})(n)$:
+$$
+\mathbf{w}_l(n+1) = \mathbf{w}_l(n) - \mu \sum_{m=1}^{M} e_m(n)\, \mathbf{x}'_{ml}(n).
+$$
+
+Filtering the reference through $\hat{S}_{ml}$ is what keeps the gradient
+aligned when the physical path adds delay and phase rotation; FxLMS tolerates
+secondary-path phase errors up to ±90°, which sets the re-identification
+requirement R7.
+
+### Tonal structure: adaptive notch form
+
+For a tone at tracked angular frequency $\hat{\omega}_k$ (rad/sample), the
+reference collapses to a quadrature pair
+$$
+\mathbf{x}_k(n) = \begin{bmatrix} \sin(\hat{\omega}_k n) \\ \cos(\hat{\omega}_k n) \end{bmatrix},
+$$
+and each (tone $k$, actuator $l$) pair needs only **two weights** — an
+amplitude and phase per tone. The full controller is $K$ tones × $L$
+actuators × 2 weights, trivially cheap, and the secondary-path filter
+reduces to multiplying by the complex gain $\hat{S}_{ml}(e^{j\hat{\omega}_k})$
+evaluated at the tone. Frequency tracking $\hat{\omega}_k(n)$ comes from a
+phase-locked loop or a peak-interpolated FFT tracker on a monitor
+microphone, satisfying R4.
+
+### Secondary-path identification (R7)
+
+Offline, with the drone present: inject low-level white or pink noise
+per actuator (sequentially, or simultaneously with uncorrelated sequences),
+estimate each $\hat{s}_{ml}$ by normalized LMS system identification, and
+accept only paths whose coherence with the injected signal exceeds 0.95 over
+30–150 Hz. Store the $M \times L$ filter bank; re-run periodically and after
+furniture changes.
+
+### Rates and latency
+
+The control band ends at 150 Hz, so the effective processing rate can be
+2–4 kHz (decimated from the interface's native rate), making $N_w$ short and
+the computational load negligible. For the synthesized-reference tonal form,
+loop latency only consumes secondary-path phase margin — it does not break
+causality — so an ordinary USB audio interface round-trip (5–10 ms) is
+acceptable; it is absorbed into the identified $\hat{S}_{ml}$.
+
+## Measurement and verification plan
+
+Baseline first, in the untreated room:
+
+1. **Tone census.** Averaged spectrum (Welch, ≥ 0.1 Hz resolution) at pillow
+   height with a calibrated measurement microphone; identify tone
+   frequencies, levels, drift statistics, and the broadband floor.
+2. **Spatial map.** Level at each tone vs. position on a ~0.5 m grid at two
+   heights; locates antinodes and any natural nulls.
+3. **Path diagnostic.** Open-window test: if the drone barely changes, the
+   path is structure-borne (landlord evidence; ANC unaffected).
+
+Acceptance, system active vs. inactive, interleaved A/B over ≥ 10 min each:
+
+| Req. | Test |
+|------|------|
+| R1, R2 | Tone SPL at pillow height and at ≥ 6 grid points spanning the occupied zone; ≥ 10 dB at each targeted tone over ≥ 75 % of points. |
+| R3 | Third-octave band comparison across 20 Hz–8 kHz; no band outside the tones up > 3 dB. |
+| R4 | Force a tone step (HVAC cycling or injected test tone); verify reconvergence < 10 s and sustained R2 under natural drift overnight. |
+| R6 | Perturb the room (open/close door, walk through); loop remains stable or mutes per R8. |
+| R7 | Identification completes ≤ 5 min; coherence ≥ 0.95 in band. |
+| R8 | Drive divergence artificially (corrupt $\hat{S}$ sign on one channel); mute within 100 ms; verify limiter ceiling with the measurement mic. |
+| R10 | Export logged before/after spectra; check calibration against the measurement mic's certificate. |
+
+All instruments, analysis scripts, and raw data live in this repository so
+results are reproducible for the landlord track.

@@ -1,0 +1,144 @@
+---
+title: "Bill of materials"
+---
+
+Every critical component is offered at three price points. **Budget** gets a
+working single-tone canceller for the cost of a nice dinner party; **Mid** is
+the recommended build meeting every spec requirement with margin;
+**Reference** is the no-compromise version. Tiers mix freely — the categories
+are independent.
+
+US street prices **as of October 2026**, from the linked retailer/aggregator
+listings; prices drift, so re-check before ordering. All actuators are
+*powered* subwoofers (amplification included), and all interfaces listed
+supply the +48 V phantom power the electret measurement mics need.
+
+## 1. Controller platform
+
+Runs the multichannel FxLMS loop. The tonal controller is computationally
+trivial (a few weights per tone per actuator at a 2–4 kHz effective rate), so
+almost anything works; what matters is a stable real-time audio stack.
+
+| Tier | Product | Price | Notes |
+|------|---------|------:|-------|
+| Budget | Any existing laptop/PC, Linux + PipeWire/JACK | $0 | Repurposed hardware; fully adequate for the DSP load. |
+| Mid | N100/N150-class fanless mini-PC (Beelink Mini S12 Pro or similar), Linux `PREEMPT_RT` | ~$160–230 | Dedicated, silent, headless; runs 24/7. |
+| Reference | NUC-class fanless mini-PC (ASUS NUC 14 Essential or similar), Linux `PREEMPT_RT` | ~$350–450 | Headroom for simultaneous logging, web dashboard, and re-identification. |
+
+An embedded platform (Bela, Teensy + audio shield) is a fine alternative for
+a sealed appliance-style build, but standard boards are stereo-limited;
+multichannel I/O is simpler over USB on a Linux box. (Raspberry Pi 5 was
+dropped: the 2025–26 memory-price surge pushed the 8 GB board above
+mini-PC territory.)
+
+## 2. Multichannel audio interface
+
+Needs ≥ 4 mic inputs with phantom power and ≥ 2 (goal 4) line outputs,
+simultaneously. Round-trip latency is absorbed into the identified secondary
+path (see [spec](spec.qmd#rates-and-latency)), so even budget USB interfaces
+qualify.
+
+| Tier | Product | I/O | Price |
+|------|---------|-----|------:|
+| Budget | [Behringer U-Phoria UMC404HD](https://equipboard.com/items/behringer-u-phoria-umc404hd) | 4 in / 4 out | $139 (used ~$82) |
+| Mid | [Behringer UMC1820](https://soundpro.com/products/behringer-000-b2j02-00010) | 8 in / 10 out | ~$229 |
+| Reference | [MOTU UltraLite Mk5](https://equipboard.com/items/motu-ultralite-mk5) | 18 in / 22 out | ~$700 |
+
+No-compromise alternative: [RME Fireface UCX II](https://markertek.com/product/fireface-ucx-ii/rme-fireface-ucx-ii-40-channel-192-khz-advanced-usb-2-0-audio-interface-with-midi-adat-aes-ebu-spdif-i-os),
+~$1,699 — RME's drivers and long-term support are the industry benchmark.
+
+## 3. Actuators: corner subwoofers (×2 budget, ×2–4 mid/reference)
+
+Sealed alignments are preferred: smooth, minimum-phase low-frequency rolloff
+(easier secondary paths, no port turbulence at the sustained drive levels ANC
+demands). Output requirements are modest — the system only has to match the
+drone's level, not fill a theater.
+
+| Tier | Product | Type | Price (each) | Qty | Subtotal |
+|------|---------|------|------:|:---:|------:|
+| Budget | [Dayton Audio SUB-800](https://www.parts-express.com/Dayton-Audio-SUB-800-Powered-Subwoofer-300-627) 8″ | ported — accept the caveat at this price | ~$135 | 2 | ~$270 |
+| Mid | [SVS SB-1000 Pro](https://hometechnologyreview.com/product/svs-sb-1000-pro-black-ash-sealed-box-subwoofer-12-325w/) 12″ | sealed, DSP + app control | ~$529 | 2 | ~$1,058 |
+| Reference | [SVS SB-2000 Pro](https://www.soundandvision.com/content/svs-sb-2000-pro-subwoofer-review-specs) 12″ | sealed, 550 W | ~$800 | 4 | ~$3,200 |
+
+Reference alternative: [Rythmik F12](https://hometheaterhifi.com/?p=74474)
+(servo-controlled sealed 12″, ~$1,000–1,100 direct from rythmik.com) — the
+servo feedback gives the most linear, lowest-distortion secondary path
+available at consumer prices.
+
+## 4. Error microphones (×4 budget, ×8 mid/reference)
+
+Error mics do **not** need flat wideband response — only stable sensitivity
+and adequate signal-to-noise ratio at the tone frequencies, since the loop
+minimizes whatever they measure. This is why a $26 omni electret is genuinely
+sufficient through the mid tier.
+
+| Tier | Product | Price (each) | Qty | Subtotal |
+|------|---------|------:|:---:|------:|
+| Budget | [Behringer ECM8000](https://www.markertek.com/product/ecm8000/behringer-ecm8000-omnidirectional-measurement-condenser-microphone) omni electret | ~$26 | 4 | ~$104 |
+| Mid | Behringer ECM8000, relative-calibrated against the UMIK-1 | ~$26 | 8 | ~$208 |
+| Reference | [Beyerdynamic MM1](https://www.sweetwater.com/c105--Beyerdynamic_Omnidirectional_Condenser_Microphones) (±1.5 dB, 50 Hz–16 kHz) | ~$250 | 8 | ~$2,000 |
+
+## 5. Calibrated measurement microphone (evidence track, R10)
+
+One absolutely calibrated microphone for before/after spectra, acceptance
+testing, and the landlord file. Separate from the error mics.
+
+| Tier | Product | Price | Notes |
+|------|---------|------:|-------|
+| Budget | Smartphone + NIOSH SLM / Spectroid app | $0 | First-pass tone census only; not calibrated evidence. |
+| Mid | [miniDSP UMIK-1](https://equipboard.com/items/minidsp-umik-1) (USB, individual cal file) | ~$108 | The REW-community standard; sufficient for R10. |
+| Reference | [miniDSP UMIK-2](https://www.parts-express.com/MiniDSP-UMIK-2-Omni-directional-USB-Measurement-Calibrated-Microphone-230-3420) (32-bit, lower noise floor) | ~$230 | Alternative: [Earthworks M23R](https://equipboard.com/items/earthworks-m23r-omnidirectional-condenser-reference-measurement-microphone), ~$599. |
+
+## 6. Reference sensor
+
+The synthesized reference (tracked-tone oscillator, see
+[spec](spec.qmd#tonal-structure-adaptive-notch-form)) is the preferred design —
+perfect coherence, zero hardware. A physical sensor is only needed if the
+tones turn out to wander too fast for the tracker.
+
+| Tier | Product | Price | Notes |
+|------|---------|------:|-------|
+| Budget | None — synthesized reference | $0 | Preferred design. |
+| Mid | Piezo contact pickup on window frame/wall, into a spare interface input | ~$20–40 | Uncalibrated is fine; only phase coherence matters. |
+| Reference | [Digiducer 333D01](https://www.digikey.com/en/videos/a/amphenol-the-modal-shop/digiducer-usb-digital-accelerometer) USB IEPE accelerometer | ~$1,115 | Lab-grade; also quantifies structure-borne vibration for the landlord file. |
+
+## 7. Cabling, stands, misc
+
+XLR cables for every mic, mic clips/stands or camera-tripod mounts, line
+cables to the subwoofers, a powered USB hub.
+
+| Tier | Contents | Price |
+|------|----------|------:|
+| Budget | 4× 15 ft XLR, 2× RCA, zip ties, tape | ~$60 |
+| Mid | 8× XLR, 4× line, 8 compact mic stands, USB hub | ~$150 |
+| Reference | As mid, with quality cable and boom stands | ~$300 |
+
+## System totals
+
+| | Budget | Mid | Reference |
+|---|------:|------:|------:|
+| Controller | $0 | $200 | $400 |
+| Interface | $139 | $229 | $700 |
+| Subwoofers | $270 | $1,058 | $3,200 |
+| Error mics | $104 | $208 | $2,000 |
+| Measurement mic | $0 | $108 | $230 |
+| Reference sensor | $0 | $30 | $1,115 |
+| Cabling/misc | $60 | $150 | $300 |
+| **Total** | **≈ $575** | **≈ $1,985** | **≈ $7,945** |
+
+The **Mid tier is the recommended build**: it meets every requirement in the
+[specification](spec.qmd) with margin, and the two SB-1000 Pros are
+unembarrassing furniture if the landlord track succeeds and the ANC system
+retires into a stereo.
+
+## Passive adjuncts (any tier)
+
+Cheap, rental-compatible complements from the
+[physics analysis](physics.qmd) — these attack leaks and modal $Q$, not the
+tones themselves:
+
+- Acoustic caulk (e.g., Green Glue sealant), ~$12/tube — window frame and
+  penetration sealing
+- Door weatherstripping / sweep kit, ~$15–25
+- Mass-loaded vinyl, ~1 lb/ft², ~$2.50/ft² — removable window plug
+  (~$80–150 for a typical window)

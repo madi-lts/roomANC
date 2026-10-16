@@ -1,0 +1,84 @@
+/*-- scss:defaults --*/
+
+// Gruvbox light (medium contrast) palette
+$gb-bg0-h:  #f9f5d7;
+$gb-bg0:    #fbf1c7;
+$gb-bg1:    #ebdbb2;
+$gb-bg2:    #d5c4a1;
+$gb-bg3:    #bdae93;
+$gb-bg4:    #a89984;
+$gb-fg0:    #282828;
+$gb-fg1:    #3c3836;
+$gb-fg2:    #504945;
+$gb-fg3:    #665c54;
+$gb-fg4:    #7c6f64;
+$gb-gray:   #928374;
+$gb-red:    #9d0006;
+$gb-green:  #79740e;
+$gb-yellow: #b57614;
+$gb-blue:   #076678;
+$gb-purple: #8f3f71;
+$gb-aqua:   #427b58;
+$gb-orange: #af3a03;
+
+// Bootstrap / cosmo mappings
+$body-bg: $gb-bg0;
+$body-color: $gb-fg1;
+$primary: $gb-aqua;
+$secondary: $gb-bg2;
+$success: $gb-green;
+$info: $gb-blue;
+$warning: $gb-yellow;
+$danger: $gb-red;
+$light: $gb-bg0-h;
+$dark: $gb-fg0;
+
+$link-color: $gb-blue;
+$link-hover-color: $gb-orange;
+
+$headings-color: $gb-fg0;
+$code-color: $gb-orange;
+$code-bg: $gb-bg1;
+$pre-bg: $gb-bg0-h;
+
+$border-color: $gb-bg2;
+$table-border-color: $gb-bg2;
+$table-striped-bg: $gb-bg1;
+
+$navbar-bg: $gb-bg1;
+$navbar-fg: $gb-fg1;
+$navbar-hl: $gb-orange;
+$footer-bg: $gb-bg1;
+$footer-fg: $gb-fg3;
+
+$input-bg: $gb-bg0-h;
+$input-color: $gb-fg1;
+$input-border-color: $gb-bg3;
+
+$toc-color: $gb-fg3;
+$toc-active-border: $gb-orange;
+
+/*-- scss:rules --*/
+
+.sidebar nav[role="doc-toc"] ul > li > a.active {
+  color: $gb-orange;
+}
+
+div.sourceCode, pre.sourceCode {
+  background-color: $gb-bg0-h;
+  border: 1px solid $gb-bg2;
+}
+
+.table thead {
+  color: $gb-fg0;
+  border-bottom: 2px solid $gb-bg3;
+}
+
+blockquote {
+  border-left: 4px solid $gb-bg3;
+  color: $gb-fg2;
+}
+
+.callout {
+  background-color: $gb-bg1;
+}
