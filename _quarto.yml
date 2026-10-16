@@ -3,6 +3,8 @@ project:
   output-dir: _site
   render:
     - "*.qmd"
+  resources:
+    - assets/mathjax/tex-svg-full.js
 
 website:
   title: "roomANC"
@@ -31,4 +33,8 @@ format:
       light: [cosmo, theme-gruvbox-light.scss]
     toc: true
     highlight-style: gruvbox
-    html-math-method: mathjax
+    html-math-method:
+      method: mathjax
+      url: assets/mathjax/tex-svg-full.js
+    grid:
+      body-width: 1200px
