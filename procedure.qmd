@@ -65,7 +65,8 @@ from a manifest CSV (one row per recording: file, tag, position in the
 the repo (archived separately); manifests, reports and maps are committed.
 
 - [ ] **1.1 Calibrated tone census** (`spectra` subcommand). Multi-minute
-  recording at pillow height ($x,y,z$ ≈ M1/M2's position, 0.65 m);
+  recording at pillow height (the virtual points V1/V2 in the
+  [layout](layout.qmd#error-microphones-a-6-mic-perimeter-array), 0.65 m);
   Welch PSD at ≥ 0.1 Hz resolution. Deliverables: absolute SPL of each
   tone, the broadband floor, and drift statistics
   $\hat{\omega}_k(t)$ for the tone tracker (R4's ±2 %, ≤ 1 Hz/min
@@ -144,7 +145,14 @@ height diversity) are load-bearing, not suggestions.
   at every clip, tape-marked footprints, cables loomed and cat-proofed.
 - [ ] **4.3 Full identification.** The complete $M \times L = 6 \times 2$
   secondary-path bank via the R7 routine; check conditioning against the
-  modal-model prediction ($\operatorname{cond}(\Psi) \le 6.6$).
+  modal-model prediction ($\operatorname{cond}(\Psi) \le 7.1$).
+- [ ] **4.3b Virtual-point calibration.** Temporary mic at each pillow
+  (bed occupied if practical): identify the sub→pillow paths
+  $\hat S_{vl}$ at the control tones, then fit the per-tone weights
+  $\mathbf{w}_v$ against the live drone
+  ([spec](spec.qmd#secondary-path-identification-and-virtual-point-calibration-r7),
+  [layout](layout.qmd#virtual-error-sensing-at-the-pillows)); verify the
+  virtual estimate tracks the direct pillow reading within 3 dB per tone.
 - [ ] **4.4 Multichannel convergence (M5).** Bring up the full loop;
   confirm stable convergence on all targeted tones and that the room,
   not just the mic positions, got quieter (spot-check with the UMIK-1).
@@ -177,7 +185,9 @@ System active vs. inactive, interleaved A/B over ≥ 10 min each, per the
 - **Re-identification (R7)** after any mic or sub move, bump, or large
   furniture change — a batted-off mic is a re-ID event at best and a
   watchdog mute at worst. The tape-marked footprints make "moved" a
-  checkable fact.
+  checkable fact. Every R7 event also re-fits the virtual-sensing
+  weights $\mathbf{w}_v$ (step 4.3b); between events, an occasional
+  pillow spot-check guards against silent drift of the virtual estimate.
 - **Evidence logging (R10):** keep the calibrated before/after record
   growing; it serves the landlord track regardless of how well the ANC
   performs.

@@ -157,18 +157,21 @@ controlled tone), by its singular values $\sigma$:
 
 | Tone (Hz) | Modes within $\pm\Delta f$ | $\sigma_{\min}$ | $\sigma_{\max}$ | $\operatorname{cond}(\Psi)$ |
 |---:|---|---:|---:|---:|
-| 39.9 | (1,0,0) | 1.58 | 1.58 | 1.0 |
-| 59.0 | (1,1,0), (0,0,1) | 0.66 | 1.50 | 2.3 |
-| 79.9 | (1,0,1), (2,0,0), (0,1,1) | 0.47 | 2.17 | 4.6 |
-| 117.9 | (0,2,1), (3,0,0), (1,2,1), (2,2,0) | 0.37 | 2.10 | 5.6 |
-| 120.0 | (3,0,0), (1,2,1), (2,2,0), (3,1,0) | 0.34 | 2.26 | 6.6 |
+| 39.9 | (1,0,0) | 1.60 | 1.60 | 1.0 |
+| 59.0 | (1,1,0), (0,0,1) | 0.85 | 1.27 | 1.5 |
+| 79.9 | (1,0,1), (2,0,0), (0,1,1) | 0.42 | 2.04 | 4.8 |
+| 117.9 | (0,2,1), (3,0,0), (1,2,1), (2,2,0) | 0.32 | 2.26 | 7.1 |
+| 120.0 | (3,0,0), (1,2,1), (2,2,0), (3,1,0) | 0.45 | 2.52 | 5.6 |
 
-Every mode group is full rank with $\operatorname{cond}(\Psi) \le 6.6$
-and $\sigma_{\min} \ge 0.34$ — no mode near any controlled tone is close
+Every mode group is full rank with $\operatorname{cond}(\Psi) \le 7.1$
+and $\sigma_{\min} \ge 0.32$ — no mode near any controlled tone is close
 to unobserved, including the four-mode clusters at the 117.9/120.0 Hz
 harmonics that motivated six mics over four
-([layout](layout.qmd#error-microphones-a-6-mic-perimeter-array)). The
-layout stands as designed; no mic moves indicated.
+([layout](layout.qmd#error-microphones-a-6-mic-perimeter-array)). These
+numbers use the M1/M2 positions adopted with
+[virtual pillow sensing](layout.qmd#virtual-error-sensing-at-the-pillows)
+(the relocation improves the 59 Hz pair: $\operatorname{cond}$ 2.3 → 1.5).
+The layout stands; no further mic moves indicated.
 
 ## What this changes downstream
 

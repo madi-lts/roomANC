@@ -107,7 +107,25 @@ evaluated at the tone. Frequency tracking $\hat{\omega}_k(n)$ comes from a
 phase-locked loop or a peak-interpolated FFT tracker on a monitor
 microphone, satisfying R4.
 
-### Secondary-path identification (R7)
+### Virtual error sensing (remote microphone technique)
+
+The quantity minimized is not the pressure at the physical mics but at
+the two **virtual points** V1/V2 at the pillows
+([layout](layout.qmd#virtual-error-sensing-at-the-pillows)). Per tracked
+tone $k$ and virtual point $v$, the estimate is a complex weight vector
+$\mathbf{w}_v(\hat\omega_k) \in \mathbb{C}^{M}$ applied to the vector
+$\mathbf{e}(\hat\omega_k)$ of demodulated complex error-mic amplitudes,
+$$
+\hat e_v(\hat\omega_k) = \mathbf{w}_v^{\mathsf H}(\hat\omega_k)\,
+\mathbf{e}(\hat\omega_k),
+$$
+and the adaptive-notch update runs on $\hat e_v$ with the calibrated
+secondary-path gains $\hat S_{vl}(e^{j\hat\omega_k})$ (sub $l$ → virtual
+point $v$) in place of the per-mic gains. $\mathbf{w}_v$ and
+$\hat S_{vl}$ come from the **calibration pass** below and are refreshed
+with every re-identification (R7).
+
+### Secondary-path identification and virtual-point calibration (R7)
 
 Offline, with the drone present: inject low-level white or pink noise
 per actuator (sequentially, or simultaneously with uncorrelated sequences),
@@ -115,6 +133,14 @@ estimate each $\hat{s}_{ml}$ by normalized LMS system identification, and
 accept only paths whose coherence with the injected signal exceeds 0.95 over
 30–150 Hz. Store the $M \times L$ filter bank; re-run periodically and after
 furniture changes.
+
+**Virtual-point calibration:** with a temporary measurement mic lying at
+each pillow (bed occupied if practical), repeat the injection to get
+$\hat S_{vl}$ at the control tones, then record the live drone to fit
+$\mathbf{w}_v$ by least squares from the error-mic amplitudes to the
+pillow amplitude, per tone. Re-fit on every R7 event and whenever a
+pillow spot-check shows the virtual residual diverging from a direct
+measurement.
 
 ### Rates and latency
 
@@ -145,7 +171,7 @@ Acceptance, system active vs. inactive, interleaved A/B over ≥ 10 min each:
 | R3 | Third-octave band comparison across 20 Hz–8 kHz; no band outside the tones up > 3 dB. |
 | R4 | Force a tone step (HVAC cycling or injected test tone); verify reconvergence < 10 s and sustained R2 under natural drift overnight. |
 | R6 | Perturb the room (open/close door, walk through); loop remains stable or mutes per R8. |
-| R7 | Identification completes ≤ 5 min; coherence ≥ 0.95 in band. |
+| R7 | Identification completes ≤ 5 min; coherence ≥ 0.95 in band. Virtual-point calibration: with the loop converged on $\hat e_v$, a direct mic at the pillow reads within 3 dB of the virtual estimate at each tone. |
 | R8 | Drive divergence artificially (corrupt $\hat{S}$ sign on one channel); mute within 100 ms; verify limiter ceiling with the measurement mic. |
 | R10 | Export logged before/after spectra; check calibration against the measurement mic's certificate. |
 
