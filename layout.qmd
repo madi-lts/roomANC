@@ -3,7 +3,7 @@ title: "Room layout"
 ---
 
 Positioning plan for the [selected build](bom.qmd#selected-build): up to 4
-subwoofers and 8 error microphones in the real bedroom,
+subwoofers and 6 perimeter error microphones in the real bedroom,
 $L_x \times L_y \times L_z = 4.445 \times 3.658 \times 2.692\ \mathrm{m}$
 ($14'7'' \times 12'0''$, ceiling $8'10''$). Furniture: bed (head at a wall)
 and a double dresser (~$1.5 \times 0.5\ \mathrm{m}$, 0.9 m tall); no desk.
@@ -102,7 +102,12 @@ the room, and the $M \times L$ secondary-path matrix picks up one dominant
 entry per row and conditions badly. **Rule: every error mic stays at least
 1 m from every woofer corner** (including the not-yet-installed phase-2
 corners, so the expansion needs no mic moves) — the dashed exclusion arcs
-in the figure. The table below satisfies it with margin.
+in the figure. The exclusion zone belongs to the *sources*, not the walls:
+a rigid wall is a pressure **antinode** ($v_n = 0 \Rightarrow |p|$
+maximal in the normal coordinate), so a pressure mic near a wall sits
+outside every evanescent zone while reading the modal field at full
+strength. The table below satisfies the rule with margin (minimum
+1.02 m, M4–S3).
 
 **3. Instability through secondary-path error.** FxLMS remains stable while
 the phase of $\hat{S}_{ml}$ is within ±90° of the true path at the control
@@ -111,41 +116,57 @@ changes rotate that phase — the fix is procedural, not geometric: fixed
 mounts, and re-identification after any disturbance (R7), with a small
 leakage term in the weight update for robustness.
 
-## Error microphones: positions
+## Error microphones: a 6-mic perimeter array
 
 The adaptive loop minimizes $\sum_m e_m^2$, so the deep quiet zone forms
 around the microphones, weighted by how well they observe the controlled
-modes. Positions (origin at S1's corner):
+modes. All six mics live at the room perimeter (0.2–0.4 m off a wall),
+where every mode is at a pressure antinode in the wall-normal coordinate —
+best SNR, best observability, no stands in the walkable floor, short
+baseboard cable runs. Positions (origin at S1's corner):
 
-| Mic | $x$ (m) | $y$ (m) | $h$ (m) | Where / why |
+| Mic | $x$ (m) | $y$ (m) | $h$ (m) | Where |
 |---|---:|---:|---:|---|
-| M1 | 1.55 | 3.05 | 0.60 | pillow, left — head height lying down |
-| M2 | 2.15 | 3.05 | 0.60 | pillow, right |
-| M3 | 3.30 | 2.45 | 1.20 | bedside, far side — seated ear height |
-| M4 | 1.00 | 1.70 | 1.60 | left mid-room, standing ear height |
-| M5 | 2.60 | 0.30 | 1.20 | on the dresser (0.9 m) + short stand |
-| M6 | 3.00 | 1.90 | 1.90 | tall stand — above the $H/2$ plane |
-| M7 | 1.05 | 2.50 | 1.00 | left of bed |
-| M8 | 1.30 | 1.10 | 1.45 | lower-left quadrant, near nodal-height band |
+| M1 | 1.55 | 3.30 | 0.65 | head wall, pillow left (behind headboard) |
+| M2 | 2.15 | 3.30 | 0.65 | head wall, pillow right |
+| M3 | 4.25 | 1.45 | 1.10 | right wall |
+| M4 | 0.20 | 2.30 | 1.75 | left wall, above $H/2$ |
+| M5 | 2.60 | 0.30 | 1.20 | bottom wall, standing on the dresser |
+| M6 | 2.95 | 3.40 | 2.10 | head wall, tall stand right of bed |
 
 The generating rules:
 
-1. **Density where your head goes** — M1/M2 bracket the pillow; M3 covers
-   sitting up in bed / bedside.
+1. **Boundary placement with two exceptions-by-construction.** Perimeter
+   mics null the *controllable* modal field globally — zeroing wall
+   pressure zeroes the mode amplitudes. But the *uncontrollable* residual
+   (structure-borne direct radiation, higher-order content) is minimized
+   wherever the mics are; keeping the pillow pair M1/M2 at the head wall
+   parks that residual's minimum at your head as well, at no aesthetic
+   cost since the bed head is already against a wall.
 2. **≥ 1 m from every (present or future) woofer corner** — verified
-   numerically: minimum over all pairs is 1.07 m (M7–S3).
-3. **Off the symmetry planes.** $x = L_x/2 = 2.22\ \mathrm{m}$ and
-   $y = L_y/2 = 1.83\ \mathrm{m}$ are nodal for every odd-order mode —
-   including the resonant (1,1,0) — and $z = H/2 = 1.35\ \mathrm{m}$ is
-   nodal for (0,0,1). Every mic sits off all three planes (M8's 1.45 m is
-   the closest approach in $z$, and it earns its spot observing the
-   in-plane modes).
-4. **Height diversity straddling $H/2$** (elevation panel): five mics
-   below, three above, so the second near-resonant mode (0,0,1) is well
-   observed with both signs.
-5. **Non-degenerate geometry**: no three mics colinear, not coplanar, so
-   the $8 \times L$ matrix $\hat{S}$ stays well-conditioned for $L = 2$
-   now and $L = 4$ later.
+   numerically: minimum over all pairs is 1.02 m (M4–S3).
+3. **Off the tangential nodal lines.** A wall midline is a null of every
+   odd mode along that wall — the resonant (1,1,0) included — so no mic
+   sits near $x = L_x/2 = 2.22\ \mathrm{m}$ on the top/bottom walls or
+   $y = L_y/2 = 1.83\ \mathrm{m}$ on the side walls (M3 keeps 0.38 m
+   clearance, the others more).
+4. **Height diversity straddling $H/2 = 1.35\ \mathrm{m}$** (elevation
+   panel): four mics below, two above, so the second near-resonant mode
+   (0,0,1) is observed with both signs.
+5. **Non-degenerate geometry**: mics on three different walls at five
+   heights — the $6 \times L$ matrix $\hat{S}$ stays well-conditioned for
+   $L = 2$ now and $L = 4$ later.
+
+**Why 6 and not 8 or 4.** The array must observe every significant mode at
+every controlled tone with margin: ~2–3 modes at 59 Hz, ~3–4 in the
+115–122 Hz cluster. Six over-determines that comfortably and tolerates one
+disturbed mic (−17 % of the array). Four (the spec R5 minimum) still
+handles the 59 Hz fundamental but leaves the harmonic-cluster observability
+matrix $\Psi_{mn} = \psi_n(\mathbf{x}_m)$ square-ish — one bad position and
+a mode goes nearly unobserved, the "quiet at the mics, loud between them"
+failure. The modal model (workstream 2) will score this layout's $\Psi$
+conditioning numerically; mic count is a 10-minute change if it says
+otherwise.
 
 ## Error microphones: mounting
 
@@ -168,12 +189,14 @@ mounting-specific issues on top of the rental and cat constraints:
   aim becomes part of the identified $\hat{S}$: set each mic pointing into
   the room interior, mark the position and rotation with tape, and re-run
   identification after any bump.
-- **Rental + cat.** Nothing fastens to walls. M1/M2 ride short boom arms
-  clamped to the bed frame (through foam) or weighted round-base stands
-  beside the headboard; M5 stands on the dresser; the rest are straight
-  stands with weighted bases. Keep capsules ≥ 1.2 m up where feasible,
-  leave no dangling cable slack (coil and tie at the stand base), and run
-  floor cables through split-loom or cord covers — a batted-off mic is a
+- **Rental + cat.** Nothing fastens to walls — "at the wall" means a stand
+  *beside* the wall. M1/M2 ride short boom arms clamped to the bed frame
+  (through foam) or short weighted stands behind the headboard; M5 stands
+  on the dresser (foam pad underneath); M3, M4 and M6 are weighted-base
+  stands tight against their walls, where they're out of the walkable
+  floor and hardest for the cat to reach. Leave no dangling cable slack
+  (coil and tie at the stand base) and run the short baseboard cable runs
+  through split-loom or cord covers — a batted-off mic is a
   re-identification event at best (R7) and a watchdog mute at worst (R8).
 
 ## Acceptance

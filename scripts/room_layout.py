@@ -21,11 +21,11 @@ R_NF = 0.93  # near-field exclusion radius ~ lambda/2pi at 59 Hz
 # subs: phase 1 = diagonal pair S1/S4; phase 2 adds S2/S3
 SUBS = {"S1": (0.35, 0.35, True), "S2": (4.09, 0.35, False),
         "S3": (0.35, 3.31, False), "S4": (4.09, 3.31, True)}
-# (x, y, height)
-MICS = {"M1": (1.55, 3.05, 0.60), "M2": (2.15, 3.05, 0.60),
-        "M3": (3.30, 2.45, 1.20), "M4": (1.00, 1.70, 1.60),
-        "M5": (2.60, 0.30, 1.20), "M6": (3.00, 1.90, 1.90),
-        "M7": (1.05, 2.50, 1.00), "M8": (1.30, 1.10, 1.45)}
+# (x, y, height) — all mics at the room perimeter (walls are pressure
+# antinodes); min distance to any sub corner 1.02 m (M4-S3)
+MICS = {"M1": (1.55, 3.30, 0.65), "M2": (2.15, 3.30, 0.65),
+        "M3": (4.25, 1.45, 1.10), "M4": (0.20, 2.30, 1.75),
+        "M5": (2.60, 0.30, 1.20), "M6": (2.95, 3.40, 2.10)}
 
 fig, (ax, axe) = plt.subplots(1, 2, figsize=(15, 7.2),
                               gridspec_kw={"width_ratios": [1.25, 1]})
@@ -57,10 +57,9 @@ for name, (x, y, p1) in SUBS.items():
     ax.text(x + dx, y + dy, name, ha="center", va="center",
             color=ACCENT, fontsize=12, fontweight="bold")
 
-LABEL_OFFSETS = {"M1": (-0.12, 0.17, "right"), "M2": (0.12, 0.17, "left"),
-                 "M3": (0.00, 0.19, "center"), "M4": (-0.14, 0.00, "right"),
-                 "M5": (0.16, 0.12, "left"), "M6": (0.16, -0.05, "left"),
-                 "M7": (-0.14, 0.00, "right"), "M8": (0.14, -0.08, "left")}
+LABEL_OFFSETS = {"M1": (-0.12, -0.28, "right"), "M2": (0.12, -0.28, "left"),
+                 "M3": (-0.16, -0.05, "right"), "M4": (0.16, -0.05, "left"),
+                 "M5": (0.18, 0.10, "left"), "M6": (0.16, -0.30, "left")}
 for name, (x, y, h) in MICS.items():
     ax.plot([x], [y], "o", ms=10, color=SERIES, mec=INK, mew=1)
     dx, dy, ha = LABEL_OFFSETS[name]
