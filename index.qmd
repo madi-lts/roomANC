@@ -1,0 +1,53 @@
+---
+title: "roomANC"
+subtitle: "Whole-room active noise cancellation of tonal low-frequency HVAC noise"
+---
+
+## The problem
+
+A rental unit suffers a constant low-frequency drone from rooftop
+HVAC units and pumps. The goal of this project is to **deploy an active noise
+cancellation (ANC) system — hardware and software — that cancels highly tonal
+low-frequency noise** in a bedroom/living space, within the constraints of a
+rental: no structural modification, nothing attached to the building fabric
+beyond caulk and weatherstripping. Landlord escalation runs as a parallel track;
+the measurement data this system produces supports both.
+
+## Why this is physically feasible
+
+Below the Schroeder frequency $f_S \approx 2000\sqrt{T_{60}/V}$ — where
+$T_{60}$ is the reverberation time in seconds and $V$ the room volume in
+m³ — the sound field in a room is **modal**, not diffuse. For a typical
+bedroom ($V \approx 50\ \mathrm{m^3}$, $T_{60} \approx 0.4\ \mathrm{s}$),
+$f_S \approx 180\ \mathrm{Hz}$. In the modal regime, a handful of room modes
+carry the field, and controlling their amplitudes with a few loudspeakers
+yields **global** (whole-room) cancellation — not just a small quiet zone
+around a microphone. Combined with the fact that the offending noise is a few
+stable tones well below $f_S$, this is exactly the regime where ANC works:
+the commercial precedent is engine-order cancellation in car cabins.
+
+Expected performance: **10–20 dB reduction at the tones** across most of the
+room, with little effect on the broadband floor. Passive treatment can't
+compete at these frequencies — see [Physics](physics.qmd) for why.
+
+## Project structure
+
+| Page | Contents |
+|---|---|
+| [Physics](physics.qmd) | Why the modal regime enables global ANC, why passive absorption and blocking fail below ~150 Hz, the structure-borne diagnostic, and modal geometry. |
+| [Measurements](measurements.qmd) | Measured spectra and the tone census: a dominant 59.0 Hz machine tone ~56 dB above the floor, plus a 39.9 Hz source and 120 Hz mains hum. |
+| [Specification](spec.qmd) | Numbered, testable system requirements; architecture; the multichannel FxLMS controller design with full equations; measurement and verification plan. |
+| [Bill of Materials](bom.qmd) | Every critical component at three price points (Budget / Mid / Reference), the selected build, and supporting items. |
+| [Layout](layout.qmd) | Positioning plan for the real 14′7″ × 12′ room: a 6-mic perimeter error array, 2 subwoofers expanding to 4, the room-mode coincidences, near-field exclusion, the feedback question, and mic mounting. |
+
+## Status
+
+- [x] Physics analysis: regime identified, ANC feasibility established ([Physics](physics.qmd))
+- [x] System specification and BOM
+- [x] First-pass tone census: dominant 59.0 Hz tone identified ([Measurements](measurements.qmd))
+- [x] Selected build chosen ([BOM](bom.qmd#selected-build)) and room layout designed ([Layout](layout.qmd))
+- [ ] Baseline measurement campaign (calibrated spectrum at pillow height, level-vs-position map, open-window structure-borne diagnostic)
+- [ ] Room-mode simulation (rectangular modal model, overlay of measured peaks)
+- [ ] FxLMS prototype: single-channel in simulation → on hardware → multichannel
+- [ ] Secondary-path identification routine
+- [ ] Deployment and acceptance testing against the spec

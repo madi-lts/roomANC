@@ -1,0 +1,104 @@
+---
+title: "Physics background"
+---
+
+Notation used throughout: $f$ = frequency (Hz), $c \approx 343\ \mathrm{m/s}$ =
+speed of sound in air at room temperature, $\lambda = c/f$ = wavelength (m),
+$V$ = room volume (m³), $T_{60}$ = reverberation time (s), $L_x, L_y, L_z$ =
+room dimensions (m), $m$ = partition surface mass (kg/m²), $p$ = acoustic
+pressure (Pa).
+
+## Modal vs. diffuse regime
+
+The character of a room's sound field changes at the **Schroeder frequency**
+
+$$
+f_S \approx 2000 \sqrt{\frac{T_{60}}{V}},
+$$
+
+with $T_{60}$ in seconds and $V$ in m³. For $V \approx 50\ \mathrm{m^3}$ and
+$T_{60} \approx 0.4\ \mathrm{s}$, $f_S \approx 180\ \mathrm{Hz}$.
+
+- **Below $f_S$ (modal regime):** the field is a superposition of a small
+  number of discrete room modes with low modal overlap. The response at any
+  point is dominated by a few modes, so driving those modes in antiphase with
+  a few loudspeakers cancels the field **globally** — the whole room gets
+  quieter, not just the neighborhood of an error microphone.
+- **Above $f_S$ (diffuse regime):** modal density and overlap are high; the
+  field at two points separated by more than $\sim\lambda/2$ decorrelates.
+  ANC then produces only a quiet zone of radius $\sim\lambda/10$ around each
+  error microphone — at 1 kHz that is ~3 cm. Not viable for a room.
+
+The HVAC drone consists of a few stable tones below ~150 Hz, safely inside
+the modal regime. This is the single most important fact about the project:
+**global cancellation is physically available here**, with an expected
+10–20 dB reduction at the tones across most of the room and little effect on
+broadband content. Car-cabin engine-order cancellation is the commercial
+precedent for exactly this configuration.
+
+## Why passive absorption fails at low frequency
+
+Porous absorbers (foam, rockwool panels) dissipate energy via viscous drag,
+which requires **particle velocity**. At a rigid wall the normal particle
+velocity is zero; it peaks a quarter wavelength away, $\lambda/4 \approx
+1.4\ \mathrm{m}$ at 60 Hz. A 5 cm foam panel on a wall sits in a velocity
+null nearly the full spectrum below 150 Hz — it does essentially nothing.
+
+What does work passively, with caveats:
+
+- **Deep corner traps**: 60–100 cm of rockwool spanning a corner reaches into
+  the velocity field and damps modes (lowers their quality factor $Q$).
+- **Tuned resonant absorbers** (Helmholtz or membrane), tuned to the drone
+  tone. These are narrowband and are defeated by pitch drift of the source.
+
+Lowering modal $Q$ does not remove the tone, but it makes the plant gentler
+and the ANC loop easier to stabilize — **passive damping and active control
+are complementary**, not alternatives.
+
+## Why passive blocking is weak
+
+Transmission loss of a single-leaf partition follows the **mass law**,
+
+$$
+\mathrm{TL} \approx 20 \log_{10}(f \cdot m) - 47\ \mathrm{dB},
+$$
+
+with $f$ in Hz and $m$ in kg/m². At 60 Hz even a heavy wall transmits well,
+and in practice **leaks dominate**: window frames, outlets, penetrations.
+The cheap, rental-compatible airborne fixes are acoustic caulk, mass-loaded
+vinyl over the window, and door weatherstripping — worthwhile, but they
+cannot reach the tens of dB needed on their own.
+
+## Structure-borne path
+
+Vibration transmitted through the slab and framing is re-radiated by the
+room's own surfaces. This path **bypasses every in-room airborne treatment**
+(blocking and absorption alike).
+
+**Diagnostic:** open a window. If the drone level barely changes, the
+dominant path is structure-borne, and the real fix is isolation at the
+source (landlord track: spring/elastomer mounts under the rooftop units and
+pumps). ANC still works against the re-radiated field regardless of the
+path, because it cancels the in-room pressure directly — another reason it
+is the primary mitigation here.
+
+## Modal geometry: where the room is loud
+
+A rigid wall enforces zero normal particle velocity, which makes it a
+**pressure antinode**. For the lowest axial mode along a dimension $L$, the
+pressure distribution is
+
+$$
+p(x) \propto \cos\!\left(\frac{\pi x}{L}\right),
+$$
+
+maximal at the walls ($x = 0, L$) and null at midroom ($x = L/2$).
+Corners, where three axial families meet, are the loudest points in the
+room. Practical consequences:
+
+- A **bed against a wall sits at a pressure maximum** — moving it toward the
+  room center can help by itself, but true quiet zones for the actual drone
+  frequencies must be found empirically (the measured level-vs-position map
+  in the spec's verification plan).
+- Conversely, **corner placement maximally couples a subwoofer to all
+  modes**, which is why the actuators go in corners.
