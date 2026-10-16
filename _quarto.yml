@@ -24,6 +24,8 @@ website:
         text: Bill of Materials
       - href: layout.qmd
         text: Layout
+      - href: modes.qmd
+        text: Modes
     right:
       - icon: github
         href: https://github.com/madi-lts/roomANC

@@ -39,8 +39,8 @@ both sources — unlucky dimensions, but good news for control: a handful of
 identified modes dominate, which is exactly the situation the modal-control
 argument assumes. (Rigid-wall values run a few Hz high of reality —
 compliant walls lower them — so the coincidences are if anything closer;
-the modal model of workstream 2 and the level-vs-position map will pin
-them down.)
+the [modal model](modes.qmd) of workstream 2 and the level-vs-position map
+will pin them down.)
 
 ## Subwoofers: start with 2 (diagonal), expand to 4
 
@@ -164,9 +164,10 @@ disturbed mic (−17 % of the array). Four (the spec R5 minimum) still
 handles the 59 Hz fundamental but leaves the harmonic-cluster observability
 matrix $\Psi_{mn} = \psi_n(\mathbf{x}_m)$ square-ish — one bad position and
 a mode goes nearly unobserved, the "quiet at the mics, loud between them"
-failure. The modal model (workstream 2) will score this layout's $\Psi$
-conditioning numerically; mic count is a 10-minute change if it says
-otherwise.
+failure. The [modal model](modes.qmd#observability-of-the-6-mic-array)
+scores this layout's $\Psi$ conditioning numerically — full rank with
+$\operatorname{cond}(\Psi) \le 6.6$ at every controlled tone; mic count
+stands at six.
 
 ## Error microphones: mounting
 
