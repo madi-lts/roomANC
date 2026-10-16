@@ -1,7 +1,7 @@
 # roomANC — project context
 
-Whole-room active noise cancellation for a low-frequency HVAC drone in a rental
-apartment (Greenbelt, MD). Read `HANDOFF.md` first: it holds the problem
+Whole-room active noise cancellation for a low-frequency HVAC drone in a
+rental. Read `HANDOFF.md` first: it holds the problem
 statement, the physics conclusions reached so far (modal regime, why ANC is
 viable below ~150 Hz, why passive treatment mostly is not), the proposed
 multichannel FxLMS design, and the candidate next tasks.

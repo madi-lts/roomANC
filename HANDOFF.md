@@ -1,8 +1,8 @@
-# Handoff: Low-frequency HVAC drone mitigation (apartment)
+# Handoff: Low-frequency HVAC drone mitigation
 
 ## Problem
 
-Apartment in Greenbelt, MD has a constant low-frequency drone from rooftop HVAC units and pumps. Goal: reduce the perceived level in a bedroom/living space, as a tenant (no structural modifications). Landlord escalation is a parallel track; a measured spectrum supports both.
+A rental unit has a constant low-frequency drone from rooftop HVAC units and pumps. Goal: reduce the perceived level in a bedroom/living space, as a tenant (no structural modifications). Landlord escalation is a parallel track; a measured spectrum supports both.
 
 ## Physics conclusions so far
 

@@ -5,7 +5,7 @@ subtitle: "Whole-room active noise cancellation of tonal low-frequency HVAC nois
 
 ## The problem
 
-An apartment in Greenbelt, MD suffers a constant low-frequency drone from rooftop
+A rental unit suffers a constant low-frequency drone from rooftop
 HVAC units and pumps. The goal of this project is to **deploy an active noise
 cancellation (ANC) system — hardware and software — that cancels highly tonal
 low-frequency noise** in a bedroom/living space, within the constraints of a
