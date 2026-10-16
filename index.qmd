@@ -42,7 +42,7 @@ compete at these frequencies — see [Physics](physics.qmd) for why.
 
 ## Status
 
-- [x] Physics analysis: regime identified, ANC feasibility established ([HANDOFF.md](https://github.com/madi-lts/roomANC/blob/master/HANDOFF.md))
+- [x] Physics analysis: regime identified, ANC feasibility established ([Physics](physics.qmd))
 - [x] System specification and BOM
 - [x] First-pass tone census: dominant 59.0 Hz tone identified ([Measurements](measurements.qmd))
 - [x] Selected build chosen ([BOM](bom.qmd#selected-build)) and room layout designed ([Layout](layout.qmd))

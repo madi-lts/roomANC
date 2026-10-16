@@ -17,5 +17,3 @@ Pages:
 - `physics.qmd` — why global ANC works below the Schroeder frequency, and why passive treatment doesn't
 - `spec.qmd` — numbered requirements, architecture, multichannel FxLMS design, verification plan
 - `bom.qmd` — bill of materials at three price points (Budget / Mid / Reference)
-
-`HANDOFF.md` holds the original physics analysis the project started from.
