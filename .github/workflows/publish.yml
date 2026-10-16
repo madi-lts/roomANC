@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - master
-      # remove after merging to master:
-      - claude/determined-ritchie-ma10cm
   workflow_dispatch:
 
 permissions:
