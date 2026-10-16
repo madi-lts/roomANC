@@ -9,78 +9,32 @@ baseline, refines each peak frequency by parabolic interpolation, and writes
 a two-panel plot plus a text report.
 
 Levels are dBFS (re full scale) — phone/camera recordings are uncalibrated,
-so only relative levels and frequencies are meaningful.
+so only relative levels and frequencies are meaningful. For calibrated,
+multi-recording campaigns (level maps, A/B tests, drift) see
+analyze_campaign.py.
 """
 import sys
 
-import numpy as np
-from scipy import signal
-from scipy.io import wavfile
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-FMAX_TONES = 300.0     # Hz, upper bound of the tone census
+from roomanc_analysis import (ACCENT, FMAX_TONES, MIN_PROMINENCE_DB, SERIES,
+                              apply_plot_style, load_wav, tonal_peaks,
+                              welch_db)
+
 FMAX_ZOOM = 200.0      # Hz, zoom panel range
-MIN_PROMINENCE_DB = 8.0
-
-# gruvbox-light styling to match the project site
-BG, GRID, INK, SERIES, ACCENT = "#fbf1c7", "#d5c4a1", "#3c3836", "#076678", "#af3a03"
-
-
-def welch_db(x, fs, seg_seconds=4.0):
-    """Welch PSD in dBFS/Hz. Segment length is shortened if x is too short."""
-    nperseg = min(int(seg_seconds * fs), len(x))
-    f, pxx = signal.welch(x, fs=fs, window="hann", nperseg=nperseg,
-                          noverlap=int(0.75 * nperseg), detrend="constant")
-    return f, 10.0 * np.log10(np.maximum(pxx, 1e-30))
-
-
-def tonal_peaks(f, db, fmax=FMAX_TONES, min_prom_db=MIN_PROMINENCE_DB):
-    """Peaks whose level is >= min_prom_db above a median-filtered baseline.
-
-    Returns (f_peak, level_db, prominence_db) rows, frequency-refined by
-    parabolic interpolation on the dB spectrum.
-    """
-    sel = f <= fmax
-    fs_, dbs = f[sel], db[sel]
-    df = f[1] - f[0]
-    # baseline over a ~20 Hz median window (odd length >= 3)
-    k = max(3, int(20.0 / df) | 1)
-    baseline = signal.medfilt(dbs, kernel_size=k)
-    prom = dbs - baseline
-    idx, _ = signal.find_peaks(prom, height=min_prom_db, distance=max(1, int(1.0 / df)))
-    rows = []
-    for i in idx:
-        if 0 < i < len(dbs) - 1:
-            a, b, c = dbs[i - 1], dbs[i], dbs[i + 1]
-            delta = 0.5 * (a - c) / (a - 2 * b + c) if (a - 2 * b + c) != 0 else 0.0
-        else:
-            delta = 0.0
-        rows.append((fs_[i] + delta * df, dbs[i], prom[i]))
-    rows.sort(key=lambda r: -r[2])
-    return rows
 
 
 def main(in_wav, out_png, out_txt=None):
-    fs, x = wavfile.read(in_wav)
-    x = x.astype(np.float64)
-    if x.ndim == 2:
-        x = x.mean(axis=1)
-    x -= x.mean()
+    fs, x = load_wav(in_wav)
     dur = len(x) / fs
 
     f, db = welch_db(x, fs)
     df = f[1] - f[0]
     peaks = tonal_peaks(f, db)
 
-    plt.rcParams.update({
-        "figure.facecolor": BG, "axes.facecolor": BG, "savefig.facecolor": BG,
-        "text.color": INK, "axes.edgecolor": GRID, "axes.labelcolor": INK,
-        "xtick.color": INK, "ytick.color": INK,
-        "grid.color": GRID, "grid.linewidth": 0.6,
-        "font.size": 11,
-    })
+    apply_plot_style(plt)
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(11, 8.5), constrained_layout=True)
 
     sel = (f >= 10) & (f <= 2000)

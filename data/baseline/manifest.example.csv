@@ -1,0 +1,7 @@
+file,tag,x,y,z,cal_file,notes
+pillow-long.wav,pillow,2.15,2.90,0.65,umik1-7xxxxxx.txt,multi-minute recording at pillow height
+grid-a1.wav,grid,0.50,0.50,0.65,umik1-7xxxxxx.txt,
+grid-a2.wav,grid,1.00,0.50,0.65,umik1-7xxxxxx.txt,
+grid-b1.wav,grid,0.50,0.50,1.75,umik1-7xxxxxx.txt,second height
+window-closed.wav,window-closed,,,,umik1-7xxxxxx.txt,structure-borne A/B reference
+window-open.wav,window-open,,,,umik1-7xxxxxx.txt,window fully open

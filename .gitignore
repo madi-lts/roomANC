@@ -1,6 +1,10 @@
+# raw measurement audio stays out of the repo (archive separately)
+data/**/*.wav
+
 _site/
 .quarto/
 /.luarc.json
 
 /.quarto/
 **/*.quarto_ipynb
+__pycache__/

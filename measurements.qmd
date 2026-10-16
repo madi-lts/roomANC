@@ -4,9 +4,12 @@ title: "Measurements"
 
 Workstream 1 of the project: measure the drone, identify its tonal structure,
 and build the evidence record. Analysis tooling lives in
-[`scripts/analyze_spectrum.py`](https://github.com/madi-lts/roomANC/blob/claude/determined-ritchie-ma10cm/scripts/analyze_spectrum.py)
+[`scripts/analyze_spectrum.py`](https://github.com/madi-lts/roomANC/blob/master/scripts/analyze_spectrum.py)
 (Welch-averaged power spectral density, tonal-peak census by prominence over a
-median-filtered baseline, parabolic sub-bin frequency interpolation).
+median-filtered baseline, parabolic sub-bin frequency interpolation) and
+[`scripts/analyze_campaign.py`](https://github.com/madi-lts/roomANC/blob/master/scripts/analyze_campaign.py)
+(manifest-driven multi-recording analysis: calibrated spectra with drift
+statistics, the level-vs-position map, and the open-window A/B diagnostic).
 
 ## First-pass tone census — 2026-10-16
 
@@ -59,3 +62,15 @@ stronger relative to 59 Hz than shown, and absolute levels mean nothing.
 3. Open-window A/B → airborne vs. structure-borne path split
    ([physics](physics.qmd#structure-borne-path)); doubles as landlord
    evidence.
+
+All three are driven by `scripts/analyze_campaign.py` from a manifest CSV
+(one row per recording: file, tag, position $x,y,z$ in the
+[layout](layout.qmd) room frame, calibration file). With a UMIK-1
+calibration file (sensitivity $S$ in dBFS re 94 dB SPL at 1 kHz, plus a
+response correction $c(f)$ in dB), levels convert as
+$L_p(f) = L_\mathrm{FS}(f) + (94 - S) + c(f)$, where $L_\mathrm{FS}$ is the
+measured level in dBFS; without one, the tooling falls back to relative
+dBFS. Per-tone levels are band-integrated over $f_0 \pm 1\ \mathrm{Hz}$
+rather than read from the peak bin, so spectral leakage does not bias the
+map. Raw WAVs are deliberately not committed (see `.gitignore`); manifests,
+reports, and rendered maps are.
