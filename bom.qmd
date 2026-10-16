@@ -136,19 +136,26 @@ retires into a stereo.
 
 ## Selected build
 
-The decided plan, fixed around a 4-in/4-out interface, four woofers at
-≤ $250 each, and reuse of equipment on hand. Positions and mounting are on
-the [Layout](layout.qmd) page.
+The decided plan: an 8-input interface driving an 8-mic error array, with
+2 subwoofers to start and outputs (and cabling) for 4. Positions and
+mounting are on the [Layout](layout.qmd) page.
 
 | Component | Product | Qty | Unit | Ext. |
 |---|---|:---:|---:|---:|
 | Controller | Existing laptop/PC, Linux + PipeWire/JACK | 1 | $0 | $0 |
-| Audio interface | [Behringer UMC404HD](https://equipboard.com/items/behringer-u-phoria-umc404hd) — 4 mic/line in (48 V), 4 balanced TRS out | 1 | $139 | $139 |
-| Subwoofers | [PreSonus Eris Sub 8BT](https://www.sweetwater.com/store/detail/ErisStuSub8BT--presonus-eris-sub-8bt-8-inch-powered-bluetooth-studio-subwoofer) — 8″, 50 W RMS, 30–200 Hz | 4 | $200–250 | $800–1,000 |
-| Error mics | [Samson C02](https://www.markertek.com/product/sam-co2/samson-c02-pencil-cardioid-condenser-microphones-pair) — 2 on hand + 1 new matched pair | 4 | — | ~$150 |
+| Audio interface | [Behringer UMC1820](https://soundpro.com/products/behringer-000-b2j02-00010) — 8 mic in (+48 V in banks of 4), 10 line out | 1 | ~$229 | ~$229 |
+| Subwoofers | [PreSonus Eris Sub 8BT](https://www.sweetwater.com/store/detail/ErisStuSub8BT--presonus-eris-sub-8bt-8-inch-powered-bluetooth-studio-subwoofer) — 8″, 50 W RMS, 30–200 Hz | 2 (→ 4) | $200–250 | $400–500 (→ $800–1,000) |
+| Error mics | [Samson C02](https://www.markertek.com/product/sam-co2/samson-c02-pencil-cardioid-condenser-microphones-pair) — 2 on hand + 3 new matched pairs | 8 | ~$150/pair | ~$450 |
 | Measurement mic | [miniDSP UMIK-1](https://equipboard.com/items/minidsp-umik-1) (calibration + evidence, R10) | 1 | ~$108 | ~$108 |
 | Reference | Synthesized (tracked-tone oscillator) | — | $0 | $0 |
-| **Total (key components)** | | | | **≈ $1,200–1,400** |
+| **Total (key components)** | | | | **≈ $1,190–1,290** (2 subs) / **≈ $1,590–1,790** (4) |
+
+The two-phase subwoofer plan follows the
+[mode analysis](layout.qmd#subwoofers-start-with-2-diagonal-expand-to-4):
+a diagonal corner pair spans two control degrees of freedom, enough for the
+two near-resonant modes under the 59 Hz tone; corners S2/S3 are pre-cabled
+for expansion if the converged residual keeps a spatial pattern the pair
+cannot null.
 
 Why these choices fit:
 
@@ -172,8 +179,8 @@ Why these choices fit:
   Grille-protected alternatives at the price, if cat-proofing wins over the
   TRS convenience: [Dayton SUB-1200](https://www.parts-express.com/Dayton-Audio-SUB-1200-Powered-Subwoofer-300-629) (~$200, cloth grille) or
   [BIC America F12](https://www.ooberpad.com/blogs/audio-video-tips/ooberpad-india-reviews-the-bic-america-formula-f12-powered-subwoofer) (~$250 street when in stock, removable grille).
-- **Samson C02 ×4.** Reusing the owned pair and adding one more
-  [matched pair (~$140–180)](https://www.markertek.com/product/sam-co2/samson-c02-pencil-cardioid-condenser-microphones-pair)
+- **Samson C02 ×8.** Reusing the owned pair and adding three more
+  [matched pairs (~$140–180 each)](https://www.markertek.com/product/sam-co2/samson-c02-pencil-cardioid-condenser-microphones-pair)
   works: error mics need only stable sensitivity and SNR at the tones, the
   C02's 40 Hz–20 kHz band comfortably contains 59 Hz, and a ~56 dB tone
   dwarfs its 22 dB(A) self-noise. The cardioid pattern mixes in a
@@ -181,11 +188,14 @@ Why these choices fit:
   fixed — the mounting rules on the
   [Layout](layout.qmd#error-microphones-mounting) page handle this, plus
   the vibration isolation a pressure-gradient capsule particularly needs.
-  The UMC404HD supplies the required +48 V phantom on all four inputs.
-- **UMC404HD.** Exactly 4 phantom-powered mic inputs for the error array
-  and 4 balanced line outputs for the subs, one clock domain for the whole
+- **UMC1820.** Eight phantom-powered mic inputs (+48 V switchable in banks
+  of 4 — both banks on) for the error array, ten balanced line outputs so
+  all four sub runs exist from day one, one clock domain for the whole
   loop, class-compliant under Linux. The UMIK-1 is USB and independent, so
-  it costs no interface channels.
+  it costs no interface channels. Doubling the error array from 4 to 8
+  mics is cheap insurance: it over-determines the $8 \times L$
+  secondary-path matrix, keeps observability when the cat relocates a
+  stand, and matches the spec's goal channel count (R5).
 
 ## Supporting items
 
@@ -195,18 +205,19 @@ measure before ordering.
 
 | Item | Qty | Est. | Notes |
 |---|:---:|---:|---|
-| XLR cables, 10–25 ft mix | 4 | $50 | error mics → interface; one per mic, routed along walls |
-| Balanced ¼″ TRS–TRS cables, 10–25 ft mix | 4 | $60 | interface outs → sub TRS inputs |
-| Weighted round-base mic stands | 2 | $60 | M4 free-standing; one spare/pillow-side |
-| Clamp-on boom arms | 2 | $40 | M1/M2 on bed frame (through foam), M3 on desk |
-| Pencil-mic shock mounts or foam clip pads | 4 | $30 | suspension $f_0 \lesssim 10$ Hz for ~−17 dB body vibration at 59 Hz |
-| Subwoofer isolation pads | 4 | $50 | floor decoupling: rental, neighbors, structure-borne re-injection |
-| Split-loom / floor cord covers | — | $25 | cat-proofing all floor runs |
-| Power strips + extension cords | 2 | $25 | one per sub pair; interface + controller at desk |
+| XLR cables, 10–25 ft mix | 8 | $90 | error mics → interface; one per mic, routed along walls |
+| Balanced ¼″ TRS–TRS cables, 10–25 ft mix | 4 | $60 | interface outs → sub TRS inputs; all four runs laid from day one |
+| Weighted round-base mic stands | 4 | $110 | M4/M6/M7/M8 free-standing (M6 needs ~2 m reach) |
+| Clamp-on boom arms + short desktop stand | 3 | $55 | M1/M2 on bed frame (through foam); M5 on the dresser |
+| Pencil-mic shock mounts or foam clip pads | 8 | $50 | suspension $f_0 \lesssim 10$ Hz for ~−17 dB body vibration at 59 Hz |
+| Subwoofer isolation pads | 2 (→ 4) | $30–55 | floor decoupling: rental, neighbors, structure-borne re-injection |
+| Split-loom / floor cord covers | — | $35 | cat-proofing all floor runs (8 mic + 4 sub runs) |
+| Power strips + extension cords | 2 | $25 | one per diagonal; interface + controller at the dresser |
 | Gaffer tape, zip ties, marking tape | — | $15 | position/rotation marks at every mic and sub (re-ID discipline, R7) |
-| **Subtotal** | | **≈ $355** | |
+| **Subtotal** | | **≈ $460–485** | |
 
-**Selected build grand total ≈ $1,550–1,750** including supporting items.
+**Selected build grand total ≈ $1,650–1,780 with 2 subs, ≈ $2,080–2,280
+with the 4-sub expansion**, including supporting items.
 
 ## Passive adjuncts (any tier)
 

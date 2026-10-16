@@ -38,7 +38,7 @@ compete at these frequencies — see [Physics](physics.qmd) for why.
 | [Measurements](measurements.qmd) | Measured spectra and the tone census: a dominant 59.0 Hz machine tone ~56 dB above the floor, plus a 39.9 Hz source and 120 Hz mains hum. |
 | [Specification](spec.qmd) | Numbered, testable system requirements; architecture; the multichannel FxLMS controller design with full equations; measurement and verification plan. |
 | [Bill of Materials](bom.qmd) | Every critical component at three price points (Budget / Mid / Reference), the selected build, and supporting items. |
-| [Layout](layout.qmd) | Positioning plan for 4 subwoofers + 4 error mics: corner loading, near-field exclusion, the feedback question, and mic mounting. |
+| [Layout](layout.qmd) | Positioning plan for the real 14′7″ × 12′ room: 8 error mics, 2 subwoofers expanding to 4, the room-mode coincidences, near-field exclusion, the feedback question, and mic mounting. |
 
 ## Status
 
