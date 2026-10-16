@@ -1,0 +1,45 @@
+project:
+  type: website
+  output-dir: _site
+  render:
+    - "*.qmd"
+  resources:
+    - assets/mathjax/tex-svg-full.js
+
+website:
+  title: "roomANC"
+  site-url: https://madi-lts.github.io/roomANC/
+  description: "Whole-room active noise cancellation of tonal low-frequency HVAC noise"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Overview
+      - href: physics.qmd
+        text: Physics
+      - href: measurements.qmd
+        text: Measurements
+      - href: spec.qmd
+        text: Specification
+      - href: bom.qmd
+        text: Bill of Materials
+      - href: layout.qmd
+        text: Layout
+    right:
+      - icon: github
+        href: https://github.com/madi-lts/roomANC
+        aria-label: GitHub
+  page-footer:
+    center: "roomANC — whole-room ANC for tonal low-frequency noise"
+
+format:
+  html:
+    theme:
+      dark: [cosmo, theme-gruvbox-dark.scss]
+      light: [cosmo, theme-gruvbox-light.scss]
+    toc: true
+    highlight-style: gruvbox
+    html-math-method:
+      method: mathjax
+      url: assets/mathjax/tex-svg-full.js
+    grid:
+      body-width: 1200px
