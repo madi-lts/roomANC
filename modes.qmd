@@ -95,7 +95,8 @@ only seven modes — which is the modal-control regime the
 elevation through the bed centerline $y = 2.66$ m. Dashed contour:
 −20 dB re the in-slice maximum (the predicted null trench). Dots: error
 mics; squares: subwoofer corners (filled = phase 1); dotted rectangle:
-bed.](images/pressure-59hz.png){#fig-p59}
+current bed; green star and dashed rectangle: the
+[recommended head position and bed footprint](#recommended-bed-placement).](images/pressure-59hz.png){#fig-p59}
 
 At 59.0 Hz the response is shared between **(1,1,0)**
 ($|f_{\mathbf{n}} - f| = 1.7$ Hz) and **(0,0,1)** (4.7 Hz), as the
@@ -105,16 +106,41 @@ coincidence analysis anticipated. Consequences:
   interference with (0,0,1) and the off-resonant background bends it into
   the curved trench visible in both slices, running near midroom and
   rising from $z \approx 1$ m toward the ceiling with increasing $x$.
-- **The bed is loud.** The pillow zone ($y \gtrsim 2.7$ m, head wall) sits
-  at 70–100 % of the slice maximum — consistent with the complaint, and
-  with the head-wall mic pair M1/M2 observing the drone's field close to
-  its maximum.
+- **The bed is off the trench but far from quiet.** The slice maximum is
+  the S1 corner; the pillow zone ($y \gtrsim 2.7$ m, head wall) reads
+  16–23 % of it (−13 to −16 dB) — 8–10 dB above the trench floor the
+  model says is available (see
+  [recommended placement](#recommended-bed-placement)).
 - Every error mic sits well off the −20 dB trench at both tones, i.e. the
   perimeter array observes the dominant modes at good SNR.
 
 ![Modeled $|p|$ at 39.9 Hz, same slices and markings. The field is
 essentially the (1,0,0) axial mode: a single null plane at
 $x = L_x/2 = 2.22$ m, uniform in $z$.](images/pressure-40hz.png){#fig-p40}
+
+## Recommended bed placement
+
+Minimizing the modeled $|p|$ at head height $z = 0.65$ m, with 59 Hz
+weighted 10:1 in power over 39.9 Hz (it dominates perceptually), puts the
+**optimal head position at $(x, y) \approx (2.51, 1.31)$ m** (origin at
+S1's corner): −24 dB re the slice maximum at 59 Hz and −14 dB at
+39.9 Hz, against −13 to −16 dB and −9 dB at the current pillow
+positions — a predicted passive gain of **8–10 dB at 59 Hz and
+~5 dB at 39.9 Hz** for rotating the bed 180° with the head toward
+midroom (footprint $x \approx 1.75$–$3.25$, $y \approx 1.3$–$3.3$ m, foot
+at the current head wall; the green overlay in @fig-p59 and @fig-p40).
+The minimum is not a knife-edge: ±20 cm in any direction stays below
+−21 dB at 59 Hz.
+
+The robust part of this is that $x \approx L_x/2 = 2.22$ m is a null of
+every odd-$n_x$ mode at once — (1,0,0) under the 39.9 Hz tone and (1,1,0)
+under the drone. What survives there at 59 Hz is mostly (0,0,1), whose
+null plane $z = H/2 = 1.35$ m a bed cannot reach — which is why ANC
+remains the primary tool. The exact $y$ and the shift from 2.22 to
+$\approx 2.5$ m inherit the equal-excitation assumption, so the spot
+should be confirmed against the measured level-vs-position map before
+furniture moves; moving the bed also relocates M1/M2 and triggers
+re-identification (spec R7).
 
 At 39.9 Hz only **(1,0,0)** is within $\Delta f$; the next mode, (0,1,0)
 at 46.9 Hz, is 7 Hz away and contributes the weak $y$-asymmetry in the
