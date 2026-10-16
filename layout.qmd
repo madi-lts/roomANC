@@ -170,25 +170,24 @@ otherwise.
 
 ## Error microphones: mounting
 
-The mics are Samson C02s — pencil cardioid condensers — which brings two
-mounting-specific issues on top of the rental and cat constraints:
+The mics are Behringer ECM8000s — pencil-form **omnidirectional**
+measurement condensers. The omni (pure-pressure) capsule simplifies
+mounting twice over: there is no aim to control (a pressure reading is
+orientation-free, unlike the cardioid alternative, whose pressure-gradient
+component would make the reading direction-dependent), and pressure
+capsules are intrinsically far less sensitive to body vibration than
+gradient capsules. What remains:
 
-- **Structure-borne pickup.** The building vibrates at exactly the
-  frequencies we care about, and a mic body rigidly coupled to floor or
-  furniture reads that vibration as spurious pressure. Mount each mic in an
-  elastic suspension (pencil-mic shock mount, or the stock clip padded with
-  foam): a suspension resonance $f_0 \approx 8\ \mathrm{Hz}$ attenuates
-  59 Hz body vibration by roughly $(f_0/f)^2 \approx -17\ \mathrm{dB}$, and
-  softer is better. Prefer stands on rugs/pads over clamps on large
-  resonant panels (a shaking headboard is the worst host). M5's dresser
-  perch gets a foam pad under its stand.
-- **Fixed orientation.** A cardioid responds to a pressure-gradient
-  component, so its reading in a standing-wave field depends on aim.
-  That is harmless — the loop minimizes what it measures, and the
-  (huge) 59 Hz signal is far above the capsule's low-end rolloff — but the
-  aim becomes part of the identified $\hat{S}$: set each mic pointing into
-  the room interior, mark the position and rotation with tape, and re-run
-  identification after any bump.
+- **Structure-borne pickup (residual).** The building vibrates at exactly
+  the frequencies we care about, so cheap insurance is still worth it: pad
+  each stock clip with foam (a suspension resonance
+  $f_0 \approx 8\ \mathrm{Hz}$ attenuates 59 Hz body vibration by roughly
+  $(f_0/f)^2 \approx -17\ \mathrm{dB}$), and prefer stands on rugs/pads
+  over clamps on large resonant panels (a shaking headboard is the worst
+  host). M5's dresser perch gets a foam pad under its stand.
+- **Fixed position.** Orientation no longer matters, but position still
+  becomes part of the identified $\hat{S}$: tape-mark each stand's
+  footprint and re-run identification after any move or bump (R7).
 - **Rental + cat.** Nothing fastens to walls — "at the wall" means a stand
   *beside* the wall. M1/M2 ride short boom arms clamped to the bed frame
   (through foam) or short weighted stands behind the headboard; M5 stands

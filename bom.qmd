@@ -146,10 +146,10 @@ and outputs (and cabling) for 4. Positions and mounting are on the
 | Controller | Existing laptop/PC, Linux + PipeWire/JACK | 1 | $0 | $0 |
 | Audio interface | [Behringer UMC1820](https://soundpro.com/products/behringer-000-b2j02-00010) — 8 mic in (+48 V in banks of 4), 10 line out | 1 | ~$229 | ~$229 |
 | Subwoofers | [PreSonus Eris Sub 8BT](https://www.sweetwater.com/store/detail/ErisStuSub8BT--presonus-eris-sub-8bt-8-inch-powered-bluetooth-studio-subwoofer) — 8″, 50 W RMS, 30–200 Hz | 2 (→ 4) | $200–250 | $400–500 (→ $800–1,000) |
-| Error mics | [Samson C02](https://www.markertek.com/product/sam-co2/samson-c02-pencil-cardioid-condenser-microphones-pair) — 2 on hand + 2 new matched pairs | 6 | ~$150/pair | ~$300 |
+| Error mics | [Behringer ECM8000](https://www.markertek.com/product/ecm8000/behringer-ecm8000-omnidirectional-measurement-condenser-microphone) — omni measurement condenser | 6 | ~$26 | ~$156 |
 | Measurement mic | [miniDSP UMIK-1](https://equipboard.com/items/minidsp-umik-1) (calibration + evidence, R10) | 1 | ~$108 | ~$108 |
 | Reference | Synthesized (tracked-tone oscillator) | — | $0 | $0 |
-| **Total (key components)** | | | | **≈ $1,040–1,140** (2 subs) / **≈ $1,440–1,640** (4) |
+| **Total (key components)** | | | | **≈ $895–995** (2 subs) / **≈ $1,295–1,495** (4) |
 
 The two-phase subwoofer plan follows the
 [mode analysis](layout.qmd#subwoofers-start-with-2-diagonal-expand-to-4):
@@ -180,15 +180,18 @@ Why these choices fit:
   Grille-protected alternatives at the price, if cat-proofing wins over the
   TRS convenience: [Dayton SUB-1200](https://www.parts-express.com/Dayton-Audio-SUB-1200-Powered-Subwoofer-300-629) (~$200, cloth grille) or
   [BIC America F12](https://www.ooberpad.com/blogs/audio-video-tips/ooberpad-india-reviews-the-bic-america-formula-f12-powered-subwoofer) (~$250 street when in stock, removable grille).
-- **Samson C02 ×6.** Reusing the owned pair and adding two more
-  [matched pairs (~$140–180 each)](https://www.markertek.com/product/sam-co2/samson-c02-pencil-cardioid-condenser-microphones-pair)
-  works: error mics need only stable sensitivity and SNR at the tones, the
-  C02's 40 Hz–20 kHz band comfortably contains 59 Hz, and a ~56 dB tone
-  dwarfs its 22 dB(A) self-noise. The cardioid pattern mixes in a
-  pressure-gradient component, which is harmless so long as orientation is
-  fixed — the mounting rules on the
-  [Layout](layout.qmd#error-microphones-mounting) page handle this, plus
-  the vibration isolation a pressure-gradient capsule particularly needs.
+- **ECM8000 ×6 — the cheaper mic is also the better mic here.** It is an
+  **omnidirectional pressure transducer**: a pure pressure observable is
+  exactly what the loop should minimize in a modal field, so there is no
+  orientation dependence at all (the cardioid Samson C02 considered
+  earlier mixes in a pressure-gradient component, which forced a
+  fixed-aim rule and made the capsule more sensitive to the body
+  vibration the building delivers at precisely our frequencies). Its
+  measurement-mic response (nominally 15 Hz–20 kHz) extends below the
+  C02's 40 Hz spec, and its higher self-noise and unit-to-unit spread are
+  irrelevant against a ~56 dB tone — error mics need stability, not
+  absolute calibration. It runs on the same +48 V phantom. The owned C02
+  pair returns to instrument duty.
 - **UMC1820.** Eight phantom-powered mic inputs (+48 V switchable in banks
   of 4 — both banks on) for the 6-mic array with two spares, ten balanced
   line outputs so all four sub runs exist from day one, one clock domain
@@ -212,14 +215,14 @@ measure before ordering.
 | Balanced ¼″ TRS–TRS cables, 10–25 ft mix | 4 | $60 | interface outs → sub TRS inputs; all four runs laid from day one |
 | Weighted round-base mic stands | 3 | $85 | M3/M4/M6 against their walls (M6 needs ~2.1 m reach) |
 | Clamp-on boom arms + short desktop stand | 3 | $55 | M1/M2 on bed frame (through foam); M5 on the dresser |
-| Pencil-mic shock mounts or foam clip pads | 6 | $40 | suspension $f_0 \lesssim 10$ Hz for ~−17 dB body vibration at 59 Hz |
+| Foam clip pads (shock mounts optional) | 6 | $40 | omni capsules are vibration-tolerant; foam at the clip is cheap insurance |
 | Subwoofer isolation pads | 2 (→ 4) | $30–55 | floor decoupling: rental, neighbors, structure-borne re-injection |
 | Split-loom / floor cord covers | — | $30 | cat-proofing the baseboard runs (6 mic + 4 sub) |
 | Power strips + extension cords | 2 | $25 | one per diagonal; interface + controller at the dresser |
 | Gaffer tape, zip ties, marking tape | — | $15 | position/rotation marks at every mic and sub (re-ID discipline, R7) |
 | **Subtotal** | | **≈ $400–425** | |
 
-**Selected build grand total ≈ $1,440–1,565 with 2 subs, ≈ $1,840–2,065
+**Selected build grand total ≈ $1,295–1,420 with 2 subs, ≈ $1,695–1,920
 with the 4-sub expansion**, including supporting items.
 
 ## Passive adjuncts (any tier)
