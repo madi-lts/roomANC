@@ -8,6 +8,7 @@ project:
 
 website:
   title: "roomANC"
+  site-url: https://madi-lts.github.io/roomANC/
   description: "Whole-room active noise cancellation of tonal low-frequency HVAC noise"
   navbar:
     left:
