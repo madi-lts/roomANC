@@ -35,6 +35,7 @@ compete at these frequencies — see [Physics](physics.qmd) for why.
 | Page | Contents |
 |---|---|
 | [Physics](physics.qmd) | Why the modal regime enables global ANC, why passive absorption and blocking fail below ~150 Hz, the structure-borne diagnostic, and modal geometry. |
+| [Measurements](measurements.qmd) | Measured spectra and the tone census: a dominant 59.0 Hz machine tone ~56 dB above the floor, plus a 39.9 Hz source and 120 Hz mains hum. |
 | [Specification](spec.qmd) | Numbered, testable system requirements; architecture; the multichannel FxLMS controller design with full equations; measurement and verification plan. |
 | [Bill of Materials](bom.qmd) | Every critical component at three price points (Budget / Mid / Reference), with real products and street prices. |
 
@@ -42,7 +43,8 @@ compete at these frequencies — see [Physics](physics.qmd) for why.
 
 - [x] Physics analysis: regime identified, ANC feasibility established ([HANDOFF.md](https://github.com/madi-lts/roomANC/blob/master/HANDOFF.md))
 - [x] System specification and BOM
-- [ ] Baseline measurement campaign (spectrum at pillow height, level-vs-position map, open-window structure-borne diagnostic)
+- [x] First-pass tone census: dominant 59.0 Hz tone identified ([Measurements](measurements.qmd))
+- [ ] Baseline measurement campaign (calibrated spectrum at pillow height, level-vs-position map, open-window structure-borne diagnostic)
 - [ ] Room-mode simulation (rectangular modal model, overlay of measured peaks)
 - [ ] FxLMS prototype: single-channel in simulation → on hardware → multichannel
 - [ ] Secondary-path identification routine

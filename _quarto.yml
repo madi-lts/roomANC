@@ -15,6 +15,8 @@ website:
         text: Overview
       - href: physics.qmd
         text: Physics
+      - href: measurements.qmd
+        text: Measurements
       - href: spec.qmd
         text: Specification
       - href: bom.qmd

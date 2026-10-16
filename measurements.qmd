@@ -1,0 +1,61 @@
+---
+title: "Measurements"
+---
+
+Workstream 1 of the project: measure the drone, identify its tonal structure,
+and build the evidence record. Analysis tooling lives in
+[`scripts/analyze_spectrum.py`](https://github.com/madi-lts/roomANC/blob/claude/determined-ritchie-ma10cm/scripts/analyze_spectrum.py)
+(Welch-averaged power spectral density, tonal-peak census by prominence over a
+median-filtered baseline, parabolic sub-bin frequency interpolation).
+
+## First-pass tone census — 2026-10-16
+
+Source: 7 s phone video recording of the room; audio extracted (48 kHz stereo
+AAC, mixed to mono), Welch PSD with 4 s Hann segments at 75 % overlap, giving
+resolution $\Delta f = 0.25\ \mathrm{Hz}$. Levels are dBFS (re digital full
+scale) — the recording chain is uncalibrated, so only frequencies and
+*relative* levels are meaningful.
+
+![Welch-averaged spectrum: full band (top) and 0–200 Hz detail with detected
+tonal peaks (bottom).](images/spectrum-2026-10-16.png){#fig-spectrum-first}
+
+### Result: one overwhelming tone
+
+The drone is dominated by a single component at **59.0 Hz, ≈ 56 dB above the
+broadband baseline**. The detected peaks resolve into three families:
+
+| Family | Lines (Hz) | Interpretation |
+|---|---|---|
+| **~59.0 Hz machine** (dominant) | 58.95, 117.9 (2f), 177.3 (3f), 235.8 (4f); sideband at 61.1 | Fundamental sits 1 Hz *below* US mains — the signature of a 2-pole induction motor under load with ~1.7 % slip (≈ 3540 rpm shaft rate), i.e. mechanical, not electrical hum. The 61.1 Hz line (f + 2.1 Hz) is consistent with slip-frequency amplitude modulation. |
+| **~39.9 Hz machine** | 39.9, 79.9 (2f), 199.5 (5f) | A second, weaker rotating source near 2400 rpm — plausibly a fan or pump. |
+| **Mains hum** | 120.0 | Exactly 2 × 60 Hz: magnetic lamination hum or electrical pickup; cleanly resolved from the 117.9 Hz mechanical harmonic 2.1 Hz away. |
+
+### Implications for the ANC design
+
+- Every significant line sits inside the 30–150 Hz control band
+  ([spec R1](spec.qmd#requirements)). The energy is so concentrated that
+  cancelling the 59 Hz fundamental alone would remove most of the perceived
+  drone.
+- The controller must resolve and track the 58.95 / 61.1 / 120.0 Hz cluster
+  as separate lines — the 0.25 Hz-class resolution used here is the working
+  requirement for the tone tracker.
+- The tones at 59 and 118 Hz fall inside even a small budget subwoofer's
+  passband (cf. the [BOM actuator discussion](bom.qmd#actuators-corner-subwoofers-2-budget-2-4-midreference)).
+
+### Caveats
+
+Phone-camera audio: uncalibrated, AAC-compressed, AGC-processed, and phone
+microphones roll off steeply below ~50 Hz — the 39.9 Hz source is likely
+stronger relative to 59 Hz than shown, and absolute levels mean nothing.
+7 s also gives no drift statistics (needed for
+[spec R4](spec.qmd#requirements)).
+
+## Next measurements
+
+1. Multi-minute recording at pillow height (UMIK-1 once available) →
+   calibrated levels, drift statistics for the tone tracker.
+2. Level-vs-position map on a ~0.5 m grid at two heights → antinode/null map
+   to overlay on the room-mode model (workstream 2).
+3. Open-window A/B → airborne vs. structure-borne path split
+   ([physics](physics.qmd#structure-borne-path)); doubles as landlord
+   evidence.
