@@ -126,10 +126,25 @@ control-logic bug is found before a speaker is attached.
 - [ ] **3.3 Secondary-path identification on hardware (R7).** One sub, one
   mic on a stand: run the Phase 2.5 routine with low-level noise
   injection with the drone present; accept on the coherence gate.
-- [ ] **3.4 Single-channel cancellation (M4).** Cancel the 59.0 Hz tone at
-  one error mic; confirm with an independent UMIK-1 measurement, not just
-  the loop's own error signal. Exercise the watchdog on real hardware
-  before any unattended run.
+- [ ] **3.4 Test-tone rehearsal.** Before attacking the real drone, cancel
+  a *synthetic* disturbance: one sub (S4, say) plays a steady test tone
+  while the other sub and the error mics run the control loop against it —
+  with the 2-sub start that is 1 source + 1 control actuator; after the
+  S2/S3 expansion, 1–2 sources and 2–3 controls. The source is known,
+  repeatable, and switchable, so sweep it across the band: on-resonance
+  (near the measured (1,1,0)/(0,0,1) frequencies), off-resonance between
+  modes, and up through the 115–122 Hz cluster, recording converged
+  attenuation, convergence time, and tracker lock at each frequency. This
+  exercises the loop, tracker, limiter and watchdog under controlled
+  conditions, and the attenuation-vs-frequency curve cross-checks the
+  identified $\hat S_{ml}$ against the [modal model](modes.qmd). Caveat:
+  a corner sub is a compact airborne source, not the distributed
+  structure-borne primary, so this validates the control loop, not the
+  final spatial performance against the drone.
+- [ ] **3.5 Single-channel cancellation of the drone (M4).** Cancel the
+  real 59.0 Hz tone at one error mic; confirm with an independent UMIK-1
+  measurement, not just the loop's own error signal. Exercise the watchdog
+  on real hardware before any unattended run.
 
 ## Phase 4 — Full deployment (→ M5)
 
