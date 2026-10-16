@@ -39,6 +39,7 @@ compete at these frequencies — see [Physics](physics.qmd) for why.
 | [Specification](spec.qmd) | Numbered, testable system requirements; architecture; the multichannel FxLMS controller design with full equations; measurement and verification plan. |
 | [Bill of Materials](bom.qmd) | Every critical component at three price points (Budget / Mid / Reference), the selected build, and supporting items. |
 | [Layout](layout.qmd) | Positioning plan for the real 14′7″ × 12′ room: a 6-mic perimeter error array, 2 subwoofers expanding to 4, the room-mode coincidences, near-field exclusion, the feedback question, and mic mounting. |
+| [Modes](modes.qmd) | Rectangular modal model: all 29 modes to 150 Hz vs. the measured tones, modeled pressure fields at 59.0 and 39.9 Hz with predicted nulls, and the numerical observability score of the 6-mic array. |
 
 ## Status
 
@@ -47,7 +48,7 @@ compete at these frequencies — see [Physics](physics.qmd) for why.
 - [x] First-pass tone census: dominant 59.0 Hz tone identified ([Measurements](measurements.qmd))
 - [x] Selected build chosen ([BOM](bom.qmd#selected-build)) and room layout designed ([Layout](layout.qmd))
 - [ ] Baseline measurement campaign (calibrated spectrum at pillow height, level-vs-position map, open-window structure-borne diagnostic)
-- [ ] Room-mode simulation (rectangular modal model, overlay of measured peaks)
+- [x] Room-mode simulation (rectangular modal model, overlay of measured peaks) ([Modes](modes.qmd))
 - [ ] FxLMS prototype: single-channel in simulation → on hardware → multichannel
 - [ ] Secondary-path identification routine
 - [ ] Deployment and acceptance testing against the spec

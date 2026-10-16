@@ -1,0 +1,159 @@
+---
+title: "Room-mode model"
+---
+
+Workstream 2: the rectangular rigid-wall modal model of the room,
+$L_x \times L_y \times L_z = 4.445 \times 3.658 \times 2.692\ \mathrm{m}$
+(the [layout](layout.qmd) dimensions). Code in
+[`scripts/room_modes.py`](https://github.com/madi-lts/roomANC/blob/master/scripts/room_modes.py),
+which also regenerates every figure and table on this page.
+
+## Model
+
+With rigid walls the eigenfunctions and eigenfrequencies are
+
+$$
+\psi_{\mathbf{n}}(x,y,z) = \cos\frac{n_x \pi x}{L_x}
+\cos\frac{n_y \pi y}{L_y} \cos\frac{n_z \pi z}{L_z},
+\qquad
+f_{\mathbf{n}} = \frac{c}{2}\sqrt{\left(\frac{n_x}{L_x}\right)^2 +
+\left(\frac{n_y}{L_y}\right)^2 + \left(\frac{n_z}{L_z}\right)^2},
+$$
+
+where $\mathbf{n} = (n_x, n_y, n_z)$ are non-negative mode indices
+(**axial** = one nonzero index, **tangential** = two, **oblique** = three)
+and $c = 343\ \mathrm{m/s}$. The field at drive frequency $f$ is modeled as
+the damped modal sum
+
+$$
+p(\mathbf{r}; f) \;=\; \sum_{\mathbf{n}} \frac{a_{\mathbf{n}}\,
+\psi_{\mathbf{n}}(\mathbf{r})}{f_{\mathbf{n}}^2 - f^2 + i f \,\Delta f},
+$$
+
+with uniform modal half-power bandwidth
+$\Delta f = 2.2/T_{60} \approx 5.5\ \mathrm{Hz}$ (for the assumed
+$T_{60} \approx 0.4$ s) and equal modal excitation $a_{\mathbf{n}} = 1$.
+The true $a_{\mathbf{n}}$ depend on the unknown, distributed
+structure-borne source coupling, so absolute and inter-mode levels below
+are indicative only; what is robust is the *geometry* — which modes
+dominate near each tone and where their null surfaces sit. Rigid-wall
+eigenfrequencies also run a few Hz high of reality (compliant walls lower
+them); the level-vs-position map of the
+[measurement plan](measurements.qmd#next-measurements) is the ground truth
+that will pin both down.
+
+## The mode ladder to 150 Hz
+
+29 modes fall in the control band: 8 axial, 15 tangential, 6 oblique.
+
+![Rigid-wall modes to 150 Hz against the measured tone census. The grey
+curve is the equal-excitation modal response magnitude (arbitrary
+units).](images/room-modes.png){#fig-mode-ladder}
+
+| Mode | $f$ (Hz) | Family | Measured line within $\Delta f/2$ |
+|---|---:|---|---|
+| (1,0,0) | 38.6 | axial | 39.9 Hz (machine #2) |
+| (0,1,0) | 46.9 | axial | — |
+| (1,1,0) | 60.7 | tangential | 59.0 Hz (drone); 61.1 Hz (sideband) |
+| (0,0,1) | 63.7 | axial | 61.1 Hz (sideband) |
+| (1,0,1) | 74.5 | tangential | — |
+| (2,0,0) | 77.2 | axial | 79.9 Hz (2 × 39.9) |
+| (0,1,1) | 79.1 | tangential | 79.9 Hz (2 × 39.9) |
+| (1,1,1) | 88.0 | oblique | — |
+| (2,1,0) | 90.3 | tangential | — |
+| (0,2,0) | 93.8 | axial | — |
+| (2,0,1) | 100.1 | tangential | — |
+| (1,2,0) | 101.4 | tangential | — |
+| (2,1,1) | 110.5 | oblique | — |
+| (0,2,1) | 113.4 | tangential | — |
+| (3,0,0) | 115.7 | axial | 117.9 Hz (2 × 59.0) |
+| (1,2,1) | 119.7 | oblique | 117.9 Hz (2 × 59.0); 120.0 Hz (mains) |
+| (2,2,0) | 121.4 | tangential | 120.0 Hz (mains) |
+| (3,1,0) | 124.9 | tangential | — |
+| (0,0,2) | 127.4 | axial | — |
+| (3,0,1) | 132.1 | tangential | — |
+| (1,0,2) | 133.1 | tangential | — |
+| (0,1,2) | 135.8 | tangential | — |
+| (2,2,1) | 137.1 | oblique | — |
+| (3,1,1) | 140.2 | oblique | — |
+| (0,3,0) | 140.7 | axial | — |
+| (1,1,2) | 141.1 | oblique | — |
+| (1,3,0) | 145.8 | tangential | — |
+| (2,0,2) | 149.0 | tangential | — |
+| (3,2,0) | 149.0 | tangential | — |
+
+This confirms the coincidence table in the [layout](layout.qmd): every
+measured line lands within (or at the edge of) the $\pm\Delta f/2$ band of
+at least one mode except the 46.9 Hz (0,1,0), which sits in a gap of the
+source spectrum. The density is still low — between 30 and 85 Hz there are
+only seven modes — which is the modal-control regime the
+[physics argument](physics.qmd#modal-vs-diffuse-regime) relies on.
+
+## Pressure field at the two fundamentals
+
+![Modeled $|p|$ at 59.0 Hz: plan at pillow height $z = 0.65$ m and
+elevation through the bed centerline $y = 2.66$ m. Dashed contour:
+−20 dB re the in-slice maximum (the predicted null trench). Dots: error
+mics; squares: subwoofer corners (filled = phase 1); dotted rectangle:
+bed.](images/pressure-59hz.png){#fig-p59}
+
+At 59.0 Hz the response is shared between **(1,1,0)**
+($|f_{\mathbf{n}} - f| = 1.7$ Hz) and **(0,0,1)** (4.7 Hz), as the
+coincidence analysis anticipated. Consequences:
+
+- The null set is not the bare $x = L_x/2$, $y = L_y/2$ cross of (1,1,0):
+  interference with (0,0,1) and the off-resonant background bends it into
+  the curved trench visible in both slices, running near midroom and
+  rising from $z \approx 1$ m toward the ceiling with increasing $x$.
+- **The bed is loud.** The pillow zone ($y \gtrsim 2.7$ m, head wall) sits
+  at 70–100 % of the slice maximum — consistent with the complaint, and
+  with the head-wall mic pair M1/M2 observing the drone's field close to
+  its maximum.
+- Every error mic sits well off the −20 dB trench at both tones, i.e. the
+  perimeter array observes the dominant modes at good SNR.
+
+![Modeled $|p|$ at 39.9 Hz, same slices and markings. The field is
+essentially the (1,0,0) axial mode: a single null plane at
+$x = L_x/2 = 2.22$ m, uniform in $z$.](images/pressure-40hz.png){#fig-p40}
+
+At 39.9 Hz only **(1,0,0)** is within $\Delta f$; the next mode, (0,1,0)
+at 46.9 Hz, is 7 Hz away and contributes the weak $y$-asymmetry in the
+plan view. A single dominant controllable mode is the easiest possible
+control problem — two corner subs driven differentially couple to it
+directly ([layout](layout.qmd#subwoofers-start-with-2-diagonal-expand-to-4)).
+
+## Observability of the 6-mic array
+
+The promised numerical score of the layout's observability matrix
+$\Psi_{mn} = \psi_{\mathbf{n}}(\mathbf{x}_m)$ ($m$ over the six mic
+positions, $\mathbf{n}$ over the modes within $\pm\Delta f$ of each
+controlled tone), by its singular values $\sigma$:
+
+| Tone (Hz) | Modes within $\pm\Delta f$ | $\sigma_{\min}$ | $\sigma_{\max}$ | $\operatorname{cond}(\Psi)$ |
+|---:|---|---:|---:|---:|
+| 39.9 | (1,0,0) | 1.58 | 1.58 | 1.0 |
+| 59.0 | (1,1,0), (0,0,1) | 0.66 | 1.50 | 2.3 |
+| 79.9 | (1,0,1), (2,0,0), (0,1,1) | 0.47 | 2.17 | 4.6 |
+| 117.9 | (0,2,1), (3,0,0), (1,2,1), (2,2,0) | 0.37 | 2.10 | 5.6 |
+| 120.0 | (3,0,0), (1,2,1), (2,2,0), (3,1,0) | 0.34 | 2.26 | 6.6 |
+
+Every mode group is full rank with $\operatorname{cond}(\Psi) \le 6.6$
+and $\sigma_{\min} \ge 0.34$ — no mode near any controlled tone is close
+to unobserved, including the four-mode clusters at the 117.9/120.0 Hz
+harmonics that motivated six mics over four
+([layout](layout.qmd#error-microphones-a-6-mic-perimeter-array)). The
+layout stands as designed; no mic moves indicated.
+
+## What this changes downstream
+
+- The 59 Hz controller must manage **two** modes of opposite vertical
+  character (§ pressure field), confirming that the common-mode drive of
+  the diagonal sub pair plus height-diverse mics is the right minimal
+  configuration.
+- Predicted null trenches are where the verification grid
+  ([spec](spec.qmd#measurement-and-verification-plan)) should sample most
+  densely: residual-pattern failures show up there first.
+- The level-vs-position map (next measurement) overlays directly on
+  @fig-p59 / @fig-p40; a measured null displaced from the predicted one
+  calibrates the effective wall compliance, which this rigid-wall model
+  deliberately omits.
