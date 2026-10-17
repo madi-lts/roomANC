@@ -49,20 +49,21 @@ DX = (LX - 2 * DELTA) / (NX - 1)
 DY = (LY - 2 * DELTA) / (NY - 1)
 HEIGHTS = (0.65, 1.40)         # z_k (m): pillow plane, near-null plane
 
-# Furniture per Madi (2026-10-17): bed headboard at the y = 0 wall
-# spanning i=1 to ~i=3.5; dresser at the y = Ly wall spanning i=1 to i=4;
-# door on the y = 0 wall spanning i=6..i=7. NOTE: this mirrors layout.qmd /
-# scripts/room_layout.py (bed head at y = Ly there) -- reconcile the site
-# layout once the orientation question is settled.
-BED = (0.71, 0.02, 1.26, 2.00)        # x, y, w, h
-DRESSER = (0.71, LY - 0.53, 1.52, 0.51)
+# Confirmed real layout (Madi, 2026-10-17: mirror of her index description
+# in both axes): bed headboard at the y = Ly wall spanning x 2.48-3.74 m;
+# dresser at the y = 0 wall spanning x 2.22-3.74 m; door on the y = Ly wall
+# spanning x 0.56-1.37 m (roughly the i=1..i=2 columns). NOTE: the bed and
+# pillow x-positions differ from layout.qmd / scripts/room_layout.py --
+# reconcile the site layout pages separately.
+BED = (2.475, 1.638, 1.26, 2.00)      # x, y, w, h (head at y = Ly)
+DRESSER = (2.215, 0.02, 1.52, 0.51)
 
-# pillow recording points at the actual bed head (y = 0 wall)
-PILLOWS = {"left": (1.05, 0.35, 0.65), "right": (1.65, 0.35, 0.65)}
+# pillow recording points at the actual bed head (y = Ly wall)
+PILLOWS = {"left": (2.80, 3.31, 0.65), "right": (3.40, 3.31, 0.65)}
 
-# door on the y = 0 wall: 0.81 m leaf centred on the i=6..i=7 span,
-# hinge at the left jamb, swinging inward.
-DOOR_HINGE, DOOR_W = 3.08, 0.81
+# door on the y = Ly wall: 0.81 m leaf, hinge at the right jamb,
+# swinging inward.
+DOOR_HINGE, DOOR_W = 1.365, 0.81
 
 
 def grid_points():
@@ -98,26 +99,26 @@ def draw(path):
     ax.add_patch(Rectangle(BED[:2], BED[2], BED[3], fc=SOFT, ec=GRID, lw=1))
     ax.add_patch(Rectangle(DRESSER[:2], DRESSER[2], DRESSER[3], fc=SOFT,
                            ec=GRID, lw=1))
-    ax.text(BED[0] + BED[2] / 2, 1.35, "bed\n(head at this wall)",
+    ax.text(BED[0] + BED[2] / 2, 2.30, "bed\n(head at this wall)",
             ha="center", va="center", color=INK, fontsize=10)
-    ax.text(DRESSER[0] + DRESSER[2] / 2, LY - 0.27, "dresser", ha="center",
+    ax.text(DRESSER[0] + DRESSER[2] / 2, 0.27, "dresser", ha="center",
             va="center", color=INK, fontsize=9)
 
-    # door on the y = 0 wall, spanning roughly the i=6..i=7 columns
-    ax.plot([DOOR_HINGE, DOOR_HINGE + DOOR_W], [0, 0], color=BG, lw=3,
+    # door on the y = Ly wall, spanning roughly the i=1..i=2 columns
+    ax.plot([DOOR_HINGE - DOOR_W, DOOR_HINGE], [LY, LY], color=BG, lw=3,
             zorder=2)
-    ax.plot([DOOR_HINGE, DOOR_HINGE], [0, DOOR_W], color=INK, lw=1.6)
-    ax.add_patch(Arc((DOOR_HINGE, 0), 2 * DOOR_W, 2 * DOOR_W, angle=0,
-                     theta1=0, theta2=90, ec=GRID, ls=":", lw=1.2))
-    ax.text(DOOR_HINGE + DOOR_W / 2 + 0.12, 0.56, "door", ha="center",
+    ax.plot([DOOR_HINGE, DOOR_HINGE], [LY - DOOR_W, LY], color=INK, lw=1.6)
+    ax.add_patch(Arc((DOOR_HINGE, LY), 2 * DOOR_W, 2 * DOOR_W, angle=0,
+                     theta1=180, theta2=270, ec=GRID, ls=":", lw=1.2))
+    ax.text(DOOR_HINGE - DOOR_W / 2 - 0.12, LY - 0.56, "door", ha="center",
             va="center", color=INK, fontsize=9)
 
     # predicted null planes the grid lines land on
     ax.axvline(LX / 2, color=GRID, ls="--", lw=1.2)
     ax.axhline(LY / 2, color=GRID, ls="--", lw=1.2)
-    ax.text(LX / 2 + 0.05, LY - 0.26, "x = Lx/2 null\n(1,0,0),(1,1,0)",
+    ax.text(LX / 2 + 0.05, 0.90, "x = Lx/2 null\n(1,0,0),(1,1,0)",
             color=INK, fontsize=8.5)
-    ax.text(LX - 1.02, LY / 2 + 0.06, "y = Ly/2 null\n(0,1,0),(1,1,0)",
+    ax.text(0.26, LY / 2 + 0.06, "y = Ly/2 null\n(0,1,0),(1,1,0)",
             color=INK, fontsize=8.5)
 
     for i, j, k, x, y, _ in grid_points():
