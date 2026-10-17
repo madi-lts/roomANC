@@ -145,14 +145,16 @@ page.
 
 | Component | Product | Qty | Unit | Ext. |
 |---|---|:---:|---:|---:|
-| Controller | [ASUS NUC 14 Essential](https://www.starryhope.com/minipcs/models/asus-nuc-14-essential/) (N150, 16 GB/512 GB), Linux + `PREEMPT_RT`, on a 1U rack shelf | 1 | ~$300–360 | ~$300–360 |
+| Controller | [ASUS NUC 14 Essential barebone](https://www.adorama.com/asus-nuc-14-essential-barebone-mini-desktop-intel-n150/p/asrc14mnk15u) (RNUC14MNK150000U, N150; **no RAM/SSD/OS included**), Linux + `PREEMPT_RT`, on a 1U rack shelf | 1 | ~$237–255 | ~$237–255 |
+| — controller RAM | 16 GB DDR5-4800 SO-DIMM (Crucial CT16G48C40S5 or Kingston FURY KF548S38IB-16; single slot, 16 GB official max) | 1 | ~$40–60 | ~$40–60 |
+| — controller SSD | 512 GB M.2 NVMe (any mainstream TLC drive) | 1 | ~$40–60 | ~$40–60 |
 | Audio interface | [Behringer UMC1820](https://soundpro.com/products/behringer-000-b2j02-00010) — 8 mic in (+48 V in banks of 4), 10 line out | 1 | ~$229 | ~$229 |
 | Subwoofers | [PreSonus Eris Sub 8BT](https://www.sweetwater.com/store/detail/ErisStuSub8BT--presonus-eris-sub-8bt-8-inch-powered-bluetooth-studio-subwoofer) — 8″, 50 W RMS, 30–200 Hz | 2 (→ 4) | $200–250 | $400–500 (→ $800–1,000) |
 | Error mics | [Behringer ECM8000](https://www.markertek.com/product/ecm8000/behringer-ecm8000-omnidirectional-measurement-condenser-microphone) — omni measurement condenser | 6 | ~$26 | ~$156 |
 | Probe mics (P1/P2) | Behringer ECM8000 — same capsule, at the pillows for virtual-sensing calibration/monitoring | 2 | ~$26 | ~$52 |
 | Measurement mic | [miniDSP UMIK-1](https://equipboard.com/items/minidsp-umik-1) (calibration + evidence, R10) | 1 | ~$108 | ~$108 |
 | Reference | Synthesized (tracked-tone oscillator) | — | $0 | $0 |
-| **Total (key components)** | | | | **≈ $1,245–1,405** (2 subs) / **≈ $1,645–1,905** (4) |
+| **Total (key components)** | | | | **≈ $1,260–1,420** (2 subs) / **≈ $1,660–1,920** (4) |
 
 The two-phase subwoofer plan follows the
 [mode analysis](layout.qmd#subwoofers-start-with-2-diagonal-expand-to-4):
@@ -173,9 +175,16 @@ Why these choices fit:
   and at this load it runs at minimum duty, below a normal bedroom's
   ambient floor. Lives on a [1U vented shelf](#rack-housing) in the
   equipment rack, under the interface.
-  [~$300 barebone MSRP](https://www.notebookcheck.net/Asus-NUC-14-Essential-review-An-efficient-mini-PC-as-a-desktop-replacement-that-s-useful-for-everyday-use-and-at-the-office.943361.0.html),
-  [~$360 pre-configured with 16 GB/512 GB](https://www.starryhope.com/minipcs/models/asus-nuc-14-essential/);
-  any N100/N150-class mini-PC substitutes freely. If the fan ever proves
+  **ASUS sells it barebone only** — the RNUC14MNK SKUs include no RAM,
+  SSD or OS
+  ([~$237–255 street](https://www.adorama.com/asus-nuc-14-essential-barebone-mini-desktop-intel-n150/p/asrc14mnk15u)),
+  so the build adds one 16 GB DDR5-4800 SO-DIMM (single slot, 16 GB
+  official max) and a 512 GB NVMe drive. "Pre-configured" listings with
+  RAM/SSD/Windows are third-party-assembled units at a markup
+  ([e.g. $429 on sale at Newegg](https://www.newegg.com/asus-nuc-14-essential-barebone-systems-mini-pc-intel-n150-processor-4-cores-4-threads-3-60-ghz-6w-tdp-6-mb-intel-smart-cache-rnuc14mnk1500000/p/2SW-000N-000B0))
+  and bundle a Windows license this Linux box doesn't use — buy barebone
+  plus parts unless DDR5 surge pricing inverts the comparison on order
+  day. Any N100/N150-class mini-PC substitutes freely. If the fan ever proves
   audible at the bed, ASUS also sells a
   [**fanless** NUC 14 Essential variant](https://www.guru3d.com/story/asus-nuc-14-essential-fanless-packs-twin-lake-into-a-silent-074liter-pc/)
   (passive, 6 W TDP, slightly thicker chassis) that drops onto the same
@@ -268,7 +277,7 @@ measure before ordering.
 | Gaffer tape, zip ties, marking tape | — | $15 | position/rotation marks at every mic and sub (re-ID discipline, R7) |
 | **Subtotal** | | **≈ $485–510** | |
 
-**Selected build grand total ≈ $2,020–2,230 with 2 subs, ≈ $2,420–2,730
+**Selected build grand total ≈ $2,040–2,245 with 2 subs, ≈ $2,440–2,745
 with the 4-sub expansion**, including the rack housing and supporting
 items.
 
