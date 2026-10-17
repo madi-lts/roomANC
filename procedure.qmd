@@ -133,8 +133,9 @@ parallel with Phases 0–1.
 
 **Hardware needed:**
 
-- [ ] NUC 14 Essential 16 GB/512 GB (or any N100/N150-class substitute;
-  see [BOM](bom.qmd#selected-build))
+- [ ] NUC 14 Essential barebone + 16 GB DDR5-4800 SO-DIMM + 512 GB NVMe
+  SSD (or any N100/N150-class substitute; see
+  [BOM](bom.qmd#selected-build))
 - [ ] Gator 8U desktop rack + 1U vented shelf + CyberPower 1U PDU
   (houses interface + controller; see
   [BOM rack housing](bom.qmd#rack-housing))
