@@ -17,9 +17,12 @@ and controller design ([Specification](spec.qmd)), the selected build
 observability check ([Modes](modes.qmd)), a first-pass tone census, and the
 manifest-driven campaign tooling
 ([Measurements](measurements.qmd)). Not started: everything that needs
-hardware. First orders placed 2026-10-17: the UMIK-1, the controller
-(NUC barebone + RAM + SSD), and the rack kit (4U walnut rack, 1U shelf,
-1U surge-protector power strip); everything else is still to acquire.
+hardware. Ordered 2026-10-17: the UMIK-1, the controller (NUC barebone +
+RAM + SSD), the rack kit (4U walnut rack, 1U shelf, 1U surge-protector
+power strip), the UMC1820 interface, and all 8 ECM8000 mics. The
+subwoofers are deliberately held until the Phase 1 baseline shows which
+tone dominates; cables, stands and small supporting items are still to
+acquire.
 
 Dependency structure: Phase 1 (baseline) needs only the UMIK-1; Phase 2
 (simulation) needs no hardware at all, so **Phases 1 and 2 run in
@@ -144,11 +147,12 @@ parallel with Phases 0–1.
 - [x] Gator 4U desktop rack (walnut) + 1U vented shelf + 1U
   surge-protector power strip (houses interface + controller; see
   [BOM rack housing](bom.qmd#rack-housing)) — ordered 2026-10-17
-- [ ] Behringer UMC1820 interface
+- [x] Behringer UMC1820 interface — ordered 2026-10-17
 - [ ] 1–2× PreSonus Eris Sub 8BT (the second enables the 3.4 test-tone
-  rehearsal; both are needed by Phase 4 anyway)
-- [ ] 1–2× Behringer ECM8000 with XLR cable, foam clip pad and a stand
-  (all count toward Phase 4's totals)
+  rehearsal; both are needed by Phase 4 anyway) — *on hold until the
+  Phase 1 baseline confirms which tone dominates*
+- [x] 1–2× Behringer ECM8000 — all 8 mics ordered 2026-10-17 (XLR
+  cables, foam clip pads and stands still to buy)
 - [ ] 1–2× balanced ¼″ TRS–TRS cables (from the four full-length runs
   ordered in 0.2)
 - [ ] 1× power strip (far-diagonal sub; the rack side runs off the PDU)
@@ -193,8 +197,9 @@ height diversity) are load-bearing, not suggestions.
 **Hardware needed** (completes the [selected
 build](bom.qmd#selected-build) — M1 is reached when this list is done):
 
-- [ ] remaining ECM8000s to 8 total: 6 error mics M1–M6 plus the P1/P2
-  probe pair at the pillows (interface inputs 7–8)
+- [x] remaining ECM8000s to 8 total: 6 error mics M1–M6 plus the P1/P2
+  probe pair at the pillows (interface inputs 7–8) — all 8 ordered
+  2026-10-17
 - [ ] remaining XLR cables to 8, each with a foam clip pad
 - [ ] 2nd Eris Sub 8BT (if Phase 3 ran with one) + 2× isolation pads
 - [ ] stands to full count: 5× weighted round-base (M1–M4, M6; M6 needs
