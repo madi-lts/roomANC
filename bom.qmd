@@ -243,14 +243,14 @@ Why these choices fit:
 The interface is natively 19″/1U and the controller sits on a 1U vented
 shelf, so both live in a small desktop rack on the dresser — one tidy,
 cat-resistant box with one power feed, and the whole stack moves as a
-unit. 8U leaves room to grow (patch panel, a future UPS).
+unit. 4U holds the full stack with one slot spare.
 
 | Item | Price | Notes |
 |---|---:|---|
-| [Gator Elite Series Desktop 8U rack, Dark Walnut Brown](https://www.adorama.com/l/Home-Electronics/Home-Office/Rack-Mounts-and-Workstations/Gator-Cases~Rack-Enclosures-and-Cabinets?sf=Price) | ~$200 | enclosed wood-finish case; UMC1820 (1U) + shelf (1U) + PDU (1U) leaves 5U free |
+| [Gator Elite Series Desktop 4U rack, Dark Walnut Brown (GFW-ELITERK-4U-BRN)](https://www.markertek.com/product/gtrgfweliterk4ub/gator-frameworks-gfw-eliterk-4u-brn-elite-furniture-series-4u-desktop-studio-rack-dark-walnut-brown) | ~$180 | enclosed wood-finish case; UMC1820 (1U) + shelf (1U) + PDU (1U) leaves 1U free |
 | [StarTech CABSHELFV1U](https://www.cdw.com/product/startech-1u-vented-server-rack-cabinet-shelf-fixed-10in-deep-cantilever-r/4633051) 1U vented shelf, 10″ deep | ~$26–42 | carries the NUC (velcro or VESA-bolted); 44 lb rated |
 | [CyberPower CPS1215RM](https://www.cyberpowersystems.com/product/pdu/basic/cps1215rm/) 1U power strip | ~$66–73 | 10 outlets, 15 A; feeds interface, controller, and the near-corner subs |
-| **Subtotal** | **≈ $290–315** | |
+| **Subtotal** | **≈ $270–295** | |
 
 Total dissipation in the case is ~20 W (NUC at this load plus the
 UMC1820), so the enclosed case needs no forced ventilation; leave the
