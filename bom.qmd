@@ -145,14 +145,14 @@ page.
 
 | Component | Product | Qty | Unit | Ext. |
 |---|---|:---:|---:|---:|
-| Controller | [ASUS NUC 14 Essential](https://www.starryhope.com/minipcs/models/asus-nuc-14-essential/) (N150, 16 GB/512 GB), Linux + `PREEMPT_RT` | 1 | ~$300–360 | ~$300–360 |
+| Controller | Fanless 1U rackmount N100 PC ([HUNSN RS06-class](https://www.newegg.com/p/0XK-04T1-006M4) or [Qotom 1U](https://electronics.alibaba.com/product/intel-n100-mini-pc) equivalent, 8–16 GB), Linux + `PREEMPT_RT` | 1 | ~$300–450 | ~$300–450 |
 | Audio interface | [Behringer UMC1820](https://soundpro.com/products/behringer-000-b2j02-00010) — 8 mic in (+48 V in banks of 4), 10 line out | 1 | ~$229 | ~$229 |
 | Subwoofers | [PreSonus Eris Sub 8BT](https://www.sweetwater.com/store/detail/ErisStuSub8BT--presonus-eris-sub-8bt-8-inch-powered-bluetooth-studio-subwoofer) — 8″, 50 W RMS, 30–200 Hz | 2 (→ 4) | $200–250 | $400–500 (→ $800–1,000) |
 | Error mics | [Behringer ECM8000](https://www.markertek.com/product/ecm8000/behringer-ecm8000-omnidirectional-measurement-condenser-microphone) — omni measurement condenser | 6 | ~$26 | ~$156 |
 | Probe mics (P1/P2) | Behringer ECM8000 — same capsule, at the pillows for virtual-sensing calibration/monitoring | 2 | ~$26 | ~$52 |
 | Measurement mic | [miniDSP UMIK-1](https://equipboard.com/items/minidsp-umik-1) (calibration + evidence, R10) | 1 | ~$108 | ~$108 |
 | Reference | Synthesized (tracked-tone oscillator) | — | $0 | $0 |
-| **Total (key components)** | | | | **≈ $1,245–1,405** (2 subs) / **≈ $1,645–1,905** (4) |
+| **Total (key components)** | | | | **≈ $1,245–1,495** (2 subs) / **≈ $1,645–1,995** (4) |
 
 The two-phase subwoofer plan follows the
 [mode analysis](layout.qmd#subwoofers-start-with-2-diagonal-expand-to-4):
@@ -163,16 +163,22 @@ cannot null.
 
 Why these choices fit:
 
-- **NUC 14 Essential.** A dedicated, headless, always-on controller: the
-  N150 is overkill for the tonal FxLMS load (a few weights per tone per
-  actuator at a 2–4 kHz effective rate), leaving headroom for logging,
-  the evidence dashboard and re-identification runs. It runs mainstream
-  Linux with `PREEMPT_RT` and PipeWire/JACK, idles at a few watts for
-  24/7 duty, and its small fan is broadband and far below the drone —
-  invisible to the tonal controller. Lives on the dresser next to the
-  interface. [~$300 barebone MSRP](https://www.notebookcheck.net/Asus-NUC-14-Essential-review-An-efficient-mini-PC-as-a-desktop-replacement-that-s-useful-for-everyday-use-and-at-the-office.943361.0.html),
-  [~$360 pre-configured with 16 GB/512 GB](https://www.starryhope.com/minipcs/models/asus-nuc-14-essential/);
-  any N100/N150-class mini-PC substitutes freely.
+- **Fanless 1U rackmount N100 PC.** A dedicated, headless, always-on
+  controller in a 19″ 1U short-depth chassis, so it bolts straight into
+  the [equipment rack](#rack-housing) below the interface. The N100 is
+  overkill for the tonal FxLMS load (a few weights per tone per actuator
+  at a 2–4 kHz effective rate), leaving headroom for logging, the
+  evidence dashboard and re-identification runs; these appliance-style
+  boxes (sold as firewall/router hardware) are standard x86, run
+  mainstream Linux with `PREEMPT_RT` and PipeWire/JACK, idle at a few
+  watts for 24/7 duty, and — being **fanless** — contribute exactly zero
+  acoustic signature to the quiet room, tonal or broadband. Street
+  ~$300–450 configured with RAM/SSD
+  ([HUNSN N100 1U models on Newegg](https://www.newegg.com/p/0XK-04T1-006M4),
+  [Qotom 1U barebones $266–493](https://electronics.alibaba.com/product/intel-n100-mini-pc));
+  verify USB bandwidth headroom and pick a model with ≥ 2 USB ports
+  (UMC1820 + UMIK-1). Any N100/N150-class mini-PC on a 1U shelf
+  substitutes freely if a listing dries up.
 
 - **Eris Sub 8BT.** Its 30–200 Hz band covers every measured line (59.0,
   105.8, 117.9, 120.0 Hz) with full headroom at the 59 Hz fundamental; the
@@ -222,6 +228,24 @@ Why these choices fit:
   ([layout](layout.qmd#virtual-error-sensing-at-the-pillows)), so a
   knocked probe degrades monitoring, not stability.
 
+## Rack housing {#rack-housing}
+
+The interface is natively 19″/1U and the controller was chosen in a 1U
+chassis, so both live in a small desktop rack on the dresser — one tidy,
+cat-resistant box with one power feed, and the whole stack moves as a
+unit. 8U leaves room to grow (patch panel, a future UPS).
+
+| Item | Price | Notes |
+|---|---:|---|
+| [Gator Elite Series Desktop 8U rack, Dark Walnut Brown](https://www.adorama.com/l/Home-Electronics/Home-Office/Rack-Mounts-and-Workstations/Gator-Cases~Rack-Enclosures-and-Cabinets?sf=Price) | ~$200 | enclosed wood-finish case; UMC1820 (1U) + controller (1U) + PDU (1U) leaves 5U free |
+| [CyberPower CPS1215RM](https://www.cyberpowersystems.com/product/pdu/basic/cps1215rm/) 1U power strip | ~$66–73 | 10 outlets, 15 A; feeds interface, controller, and the near-corner subs |
+| **Subtotal** | **≈ $270–275** | |
+
+Both rack units are fanless and the UMC1820 dissipates little, so the
+enclosed case needs no forced ventilation. The rack sits on the dresser
+(foam or rubber feet underneath — same structure-borne logic as M5's
+stand pad on the [Layout](layout.qmd#error-microphones-mounting) page).
+
 ## Supporting items
 
 Necessary for the build but not key components. Cable lengths assume the
@@ -237,12 +261,13 @@ measure before ordering.
 | Foam clip pads (shock mounts optional) | 8 | $50 | omni capsules are vibration-tolerant; foam at the clip is cheap insurance |
 | Subwoofer isolation pads | 2 (→ 4) | $30–55 | floor decoupling: rental, neighbors, structure-borne re-injection |
 | Split-loom / floor cord covers | — | $30 | cat-proofing the baseboard runs (8 mic + 4 sub) |
-| Power strips + extension cords | 2 | $25 | one per diagonal; interface + controller at the dresser |
+| Power strip + extension cord | 1 | $15 | far diagonal only; the dresser side runs off the [rack PDU](#rack-housing) |
 | Gaffer tape, zip ties, marking tape | — | $15 | position/rotation marks at every mic and sub (re-ID discipline, R7) |
-| **Subtotal** | | **≈ $495–520** | |
+| **Subtotal** | | **≈ $485–510** | |
 
-**Selected build grand total ≈ $1,740–1,925 with 2 subs, ≈ $2,140–2,425
-with the 4-sub expansion**, including supporting items.
+**Selected build grand total ≈ $2,000–2,280 with 2 subs, ≈ $2,400–2,780
+with the 4-sub expansion**, including the rack housing and supporting
+items.
 
 ## Passive adjuncts (any tier)
 
