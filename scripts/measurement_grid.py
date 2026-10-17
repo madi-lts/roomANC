@@ -99,7 +99,7 @@ def draw(path):
     ax.add_patch(Rectangle(BED[:2], BED[2], BED[3], fc=SOFT, ec=GRID, lw=1))
     ax.add_patch(Rectangle(DRESSER[:2], DRESSER[2], DRESSER[3], fc=SOFT,
                            ec=GRID, lw=1))
-    ax.text(BED[0] + BED[2] / 2, 2.30, "bed\n(head at this wall)",
+    ax.text(BED[0] + BED[2] / 2, 2.67, "bed\n(head at this wall)",
             ha="center", va="center", color=INK, fontsize=10)
     ax.text(DRESSER[0] + DRESSER[2] / 2, 0.27, "dresser", ha="center",
             va="center", color=INK, fontsize=9)
@@ -118,7 +118,7 @@ def draw(path):
     ax.axhline(LY / 2, color=GRID, ls="--", lw=1.2)
     ax.text(LX / 2 + 0.05, 0.90, "x = Lx/2 null\n(1,0,0),(1,1,0)",
             color=INK, fontsize=8.5)
-    ax.text(0.26, LY / 2 + 0.06, "y = Ly/2 null\n(0,1,0),(1,1,0)",
+    ax.text(2.05, LY / 2 + 0.16, "y = Ly/2 null\n(0,1,0),(1,1,0)",
             color=INK, fontsize=8.5)
 
     for i, j, k, x, y, _ in grid_points():
@@ -132,23 +132,29 @@ def draw(path):
         ax.plot([x], [y], "x", ms=11, color=INK, mew=2.4, zorder=4)
 
     for i in range(NX):
-        ax.text(DELTA + i * DX, -0.16, f"i={i}", ha="center", va="top",
+        ax.text(DELTA + i * DX, LY + 0.16, f"i={i}", ha="center", va="top",
                 color=SERIES, fontsize=9)
     for j in range(NY):
-        ax.text(-0.10, DELTA + j * DY, f"j={j}", ha="right", va="center",
+        ax.text(LX + 0.10, DELTA + j * DY, f"j={j}", ha="right", va="center",
                 color=SERIES, fontsize=9)
 
-    ax.text(0.02, -0.52,
+    ax.text(LX - 0.02, LY + 0.52,
             "dots: 63 points at z = 0.65 m (pillow plane)   "
             "rings: +32 checkerboard points at z = 1.40 m   "
             "×: pillow recording points", color=INK, fontsize=9.5)
-    ax.text(0.02, -0.68,
+    ax.text(LX - 0.02, LY + 0.68,
             f"x_i = 0.20 + {DX:.3f} i,  y_j = 0.20 + {DY:.3f} j  (m);  "
             "97 placements total, ≈ 3¼ h at ~2 min each",
             color=INK, fontsize=9.5)
+    ax.text(LX - 0.02, LY + 0.84,
+            "view rotated 180°: origin (S1 corner) at top right, "
+            "x increases to the left, y downward",
+            color=INK, fontsize=9.5)
 
-    ax.set_xlim(-0.42, LX + 0.25)
-    ax.set_ylim(-0.84, LY + 0.25)
+    # view rotated 180 deg (per Madi): invert both axes so the S1 origin
+    # sits at the top right; coordinates and indices are unchanged.
+    ax.set_xlim(LX + 0.42, -0.25)
+    ax.set_ylim(LY + 1.02, -0.25)
     ax.set_aspect("equal")
     ax.axis("off")
     ax.set_title("Phase 1 level-vs-position grid — top view, "
