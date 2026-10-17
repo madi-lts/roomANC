@@ -21,8 +21,10 @@ hardware — no equipment is owned yet, including the UMIK-1 measurement mic.
 
 Dependency structure: Phase 1 (baseline) needs only the UMIK-1; Phase 2
 (simulation) needs no hardware at all, so **Phases 1 and 2 run in
-parallel**, and Phase 2 can start today. Phase 3 needs the full selected
-build plus the Phase 2 code; Phases 4–5 are strictly sequential after that.
+parallel**, and Phase 2 can start today. Phase 3 needs its own hardware
+tranche plus the Phase 2 code; Phases 4–5 are strictly sequential after
+that. Hardware is acquired **per phase**, each subsection opening with its
+*Hardware needed* list, so spending tracks progress through the phases.
 
 ### Milestones
 
@@ -35,11 +37,14 @@ build plus the Phase 2 code; Phases 4–5 are strictly sequential after that.
 | M5 | Full system converged | Multichannel loop stable on the installed 6-mic / 2-sub array |
 | M6 | Acceptance passed | Every row of the [verification table](spec.qmd#measurement-and-verification-plan) signed off |
 
-## Phase 0 — Procurement (→ M1)
+## Phase 0 — Procurement (staged; → M1)
 
 Target: the [selected build](bom.qmd#selected-build) plus [supporting
-items](bom.qmd#supporting-items). Prices on the BOM are October 2026
-street prices; re-check before ordering.
+items](bom.qmd#supporting-items), acquired **gradually**: each phase below
+opens with a *Hardware needed* list, and nothing is ordered before the
+phase ahead needs it. Prices on the BOM are October 2026 street prices;
+re-check before ordering. M1 is reached cumulatively, when the Phase 4
+list is complete.
 
 - [ ] **0.1** Order the UMIK-1 **first and separately** — it is the only
   item Phase 1 waits on, and it ships independently of the rest.
@@ -47,13 +52,13 @@ street prices; re-check before ordering.
   [layout figure](layout.qmd#fig-layout) before ordering cables (the BOM
   lengths are estimates); order all four TRS runs at full length even for
   the 2-sub start, so the S2/S3 expansion needs no re-cabling.
-- [ ] **0.3** Order the remaining build: NUC 14 Essential (or N100/N150
-  substitute), UMC1820 interface, 2× Eris Sub 8BT, 6× ECM8000, stands,
-  pads, loom, tape.
-- [ ] **0.4** On arrival, inventory-check: download the UMIK-1's serialized
-  calibration file from miniDSP and commit it to `data/`; verify the
-  UMC1820 supplies +48 V phantom on all banks and that each ECM8000
-  produces signal; verify each sub's TRS input and polarity switch.
+- [ ] **0.3** Order each later tranche against its phase's *Hardware
+  needed* list, one phase ahead of where the work stands.
+- [ ] **0.4** Inventory-check each delivery as it arrives: download the
+  UMIK-1's serialized calibration file from miniDSP and commit it to
+  `data/`; verify the UMC1820 supplies +48 V phantom on both banks and
+  that each ECM8000 produces signal; verify each sub's TRS input and
+  polarity switch.
 
 ## Phase 1 — Baseline measurement campaign (needs UMIK-1; → M2)
 
@@ -63,6 +68,13 @@ plan](spec.qmd#measurement-and-verification-plan), run through
 from a manifest CSV (one row per recording: file, tag, position in the
 [layout](layout.qmd) room frame, calibration file). Raw WAVs stay out of
 the repo (archived separately); manifests, reports and maps are committed.
+
+**Hardware needed:**
+
+- [ ] miniDSP UMIK-1 (with its downloaded calibration file)
+- [ ] 1× weighted round-base mic stand (reaches pillow height and the
+  grid points; counts toward Phase 4's five)
+- [ ] a laptop or any computer for recording (already owned)
 
 - [ ] **1.1 Calibrated tone census** (`spectra` subcommand). Multi-minute
   recording at pillow height (the virtual points V1/V2 in the
@@ -95,6 +107,9 @@ Build the controller against the [spec's signal-processing
 design](spec.qmd#signal-processing-design) with simulated plants, so every
 control-logic bug is found before a speaker is attached.
 
+**Hardware needed:** none — software only, which is why this phase runs in
+parallel with Phases 0–1.
+
 - [ ] **2.1 Single-channel adaptive-notch FxLMS.** Quadrature-pair
   reference per tone, two weights per (tone, actuator); synthetic
   secondary path $\hat{S}(z)$ with realistic delay and phase. Verify
@@ -114,7 +129,20 @@ control-logic bug is found before a speaker is attached.
   the coherence gate (≥ 0.95 over 30–150 Hz) against the modal plant,
   completing in ≤ 5 simulated minutes.
 
-## Phase 3 — Hardware bring-up (needs M1 + Phase 2; → M4)
+## Phase 3 — Hardware bring-up (needs Phase 2; → M4)
+
+**Hardware needed:**
+
+- [ ] NUC 14 Essential 16 GB/512 GB (or any N100/N150-class substitute)
+- [ ] Behringer UMC1820 interface
+- [ ] 1–2× PreSonus Eris Sub 8BT (the second enables the 3.4 test-tone
+  rehearsal; both are needed by Phase 4 anyway)
+- [ ] 1–2× Behringer ECM8000 with XLR cable, foam clip pad and a stand
+  (all count toward Phase 4's totals)
+- [ ] 1–2× balanced ¼″ TRS–TRS cables (from the four full-length runs
+  ordered in 0.2)
+- [ ] 1× power strip
+- [ ] UMIK-1 (from Phase 1) for the independent checks in 3.4/3.5
 
 - [ ] **3.1 Platform setup.** Linux with `PREEMPT_RT` on the NUC;
   PipeWire/JACK at the interface's native rate with the controller
@@ -152,6 +180,21 @@ Install exactly per [Layout](layout.qmd); the geometry rules there
 (corner loading, the 1 m near-field exclusion, nodal-line avoidance,
 height diversity) are load-bearing, not suggestions.
 
+**Hardware needed** (completes the [selected
+build](bom.qmd#selected-build) — M1 is reached when this list is done):
+
+- [ ] remaining ECM8000s to 8 total: 6 error mics M1–M6 plus the P1/P2
+  probe pair at the pillows (interface inputs 7–8)
+- [ ] remaining XLR cables to 8, each with a foam clip pad
+- [ ] 2nd Eris Sub 8BT (if Phase 3 ran with one) + 2× isolation pads
+- [ ] stands to full count: 5× weighted round-base (M1–M4, M6; M6 needs
+  ~2.1 m reach), clamp-on boom arms for P1/P2 at the headboard (through
+  foam) and a short desktop stand for M5 on the dresser
+- [ ] remaining TRS runs in place (all four laid from day one, per 0.2)
+- [ ] split-loom / floor cord covers for the 8-mic + 4-sub baseboard runs
+- [ ] 2nd power strip; gaffer tape, zip ties, marking tape for the
+  footprint marks (R7 discipline)
+
 - [ ] **4.1 Subs.** S1 + S4 corners, driver facing the corner, isolation
   pads, crossover at maximum, polarity 0°; settings taped and untouched
   thereafter.
@@ -177,6 +220,11 @@ height diversity) are load-bearing, not suggestions.
 
 System active vs. inactive, interleaved A/B over ≥ 10 min each, per the
 [verification table](spec.qmd#measurement-and-verification-plan).
+
+**Hardware needed:** nothing new — everything is owned by M1. The only
+conditional purchase in the project is 2× Eris Sub 8BT + 2 isolation pads
+**if and only if** the 5.7 expansion decision triggers (the cabling for
+them is already laid).
 
 - [ ] **5.1** R1/R2: per-tone SPL at pillow height and ≥ 6 grid points;
   ≥ 10 dB at ≥ 75 % of points (goal 20 dB).
