@@ -52,9 +52,11 @@ HEIGHTS = (0.65, 1.40)         # z_k (m): pillow plane, near-null plane
 # pillow virtual points V1/V2 (layout.qmd / scripts/room_layout.py)
 PILLOWS = {"V1": (1.55, 3.30, 0.65), "V2": (2.15, 3.30, 0.65)}
 
-# door: position NOT yet recorded on the Layout page -- placeholder on the
-# y = 0 wall, hinge at x = 0.75 m, 0.81 m leaf swinging inward.
-DOOR_HINGE, DOOR_W = 0.75, 0.81
+# door: per Madi (2026-10-17) it spans roughly the i=6..i=7 columns
+# (x ~ 3.2-3.7 m). The y = 0 stretch there is the dresser, so the door is
+# drawn on the y = Ly wall: 0.81 m leaf centred on that span, hinge at the
+# left jamb, swinging inward.
+DOOR_HINGE, DOOR_W = 3.08, 0.81
 
 
 def grid_points():
@@ -96,14 +98,14 @@ def draw(path):
     ax.text(3.06, 0.27, "dresser", ha="center", va="center", color=INK,
             fontsize=9)
 
-    # door (placeholder position -- not yet on the Layout page)
-    ax.plot([DOOR_HINGE, DOOR_HINGE + DOOR_W], [0, 0], color=BG, lw=3,
+    # door on the y = Ly wall, spanning roughly the i=6..i=7 columns
+    ax.plot([DOOR_HINGE, DOOR_HINGE + DOOR_W], [LY, LY], color=BG, lw=3,
             zorder=2)
-    ax.plot([DOOR_HINGE, DOOR_HINGE], [0, DOOR_W], color=INK, lw=1.6)
-    ax.add_patch(Arc((DOOR_HINGE, 0), 2 * DOOR_W, 2 * DOOR_W, angle=0,
-                     theta1=0, theta2=90, ec=GRID, ls=":", lw=1.2))
-    ax.text(DOOR_HINGE + DOOR_W / 2, 0.52, "door\n(position unconfirmed)",
-            ha="center", va="center", color=INK, fontsize=8.5)
+    ax.plot([DOOR_HINGE, DOOR_HINGE], [LY - DOOR_W, LY], color=INK, lw=1.6)
+    ax.add_patch(Arc((DOOR_HINGE, LY), 2 * DOOR_W, 2 * DOOR_W, angle=0,
+                     theta1=270, theta2=360, ec=GRID, ls=":", lw=1.2))
+    ax.text(DOOR_HINGE + DOOR_W / 2 + 0.12, LY - 0.56, "door", ha="center",
+            va="center", color=INK, fontsize=9)
 
     # predicted null planes the grid lines land on
     ax.axvline(LX / 2, color=GRID, ls="--", lw=1.2)
