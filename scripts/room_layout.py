@@ -77,9 +77,9 @@ ax.text(0.02, -0.30, "filled squares: subwoofers, phase 1 (diagonal pair)",
         color=ACCENT, fontsize=9.5)
 ax.text(0.02, -0.46, "dashed squares: phase-2 expansion to 4 subwoofers",
         color=ACCENT, fontsize=9.5)
-ax.text(0.02, -0.62, "dots: error mics, (height m); ×: virtual pillow "
-        "points V1/V2 (h = 0.65 m); dashed arcs: near-field exclusion "
-        "r ≈ 0.93 m", color=INK, fontsize=9.5)
+ax.text(0.02, -0.62, "dots: error mics, (height m); ×: virtual points "
+        "V1/V2 = probe mics P1/P2 (h = 0.65 m); dashed arcs: near-field "
+        "exclusion r ≈ 0.93 m", color=INK, fontsize=9.5)
 ax.set_xlim(-0.25, LX + 0.25)
 ax.set_ylim(-0.78, LY + 0.25)
 ax.set_aspect("equal")

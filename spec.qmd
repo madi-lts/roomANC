@@ -134,13 +134,17 @@ accept only paths whose coherence with the injected signal exceeds 0.95 over
 30–150 Hz. Store the $M \times L$ filter bank; re-run periodically and after
 furniture changes.
 
-**Virtual-point calibration:** with a temporary measurement mic lying at
-each pillow (bed occupied if practical), repeat the injection to get
-$\hat S_{vl}$ at the control tones, then record the live drone to fit
-$\mathbf{w}_v$ by least squares from the error-mic amplitudes to the
-pillow amplitude, per tone. Re-fit on every R7 event and whenever a
-pillow spot-check shows the virtual residual diverging from a direct
-measurement.
+**Virtual-point calibration:** via the dedicated **probe pair P1/P2**
+(two ECM8000s permanently wired to interface inputs 7–8, mounted at the
+pillows; [BOM](bom.qmd#selected-build),
+[layout](layout.qmd#virtual-error-sensing-at-the-pillows)): repeat the
+injection to get $\hat S_{vl}$ at the control tones, then record the
+live drone to fit $\mathbf{w}_v$ by least squares from the error-mic
+amplitudes to the probe amplitude, per tone. The probes never enter the
+control loop. Re-fit on every R7 event and on a schedule (nightly, with
+the sleeper present so calibration matches operation); alarm when the
+live probe reading diverges from the virtual estimate beyond the
+acceptance margin.
 
 ### Rates and latency
 
