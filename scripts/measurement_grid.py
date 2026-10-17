@@ -27,8 +27,8 @@ gives ~3 points per half-wavelength along x (Lx/3 = 1.48 m) and y, well
 inside the ~0.74 m Nyquist bound for nx = 3.
 
 Placements: the full 9x7 = 63 points at z = 0.65 m, a 32-point
-checkerboard ((i+j) even) at z = 1.40 m, plus the two pillow points
-V1/V2 -- 97 single-mic placements, ~3h15 at ~2 min each, splittable by
+checkerboard ((i+j) even) at z = 1.40 m, plus the two pillow recording
+points -- 97 single-mic placements, ~3h15 at ~2 min each, splittable by
 height pass.
 """
 import csv
@@ -49,13 +49,19 @@ DX = (LX - 2 * DELTA) / (NX - 1)
 DY = (LY - 2 * DELTA) / (NY - 1)
 HEIGHTS = (0.65, 1.40)         # z_k (m): pillow plane, near-null plane
 
-# pillow virtual points V1/V2 (layout.qmd / scripts/room_layout.py)
-PILLOWS = {"V1": (1.55, 3.30, 0.65), "V2": (2.15, 3.30, 0.65)}
+# Furniture per Madi (2026-10-17): bed headboard at the y = 0 wall
+# spanning i=1 to ~i=3.5; dresser at the y = Ly wall spanning i=1 to i=4;
+# door on the y = 0 wall spanning i=6..i=7. NOTE: this mirrors layout.qmd /
+# scripts/room_layout.py (bed head at y = Ly there) -- reconcile the site
+# layout once the orientation question is settled.
+BED = (0.71, 0.02, 1.26, 2.00)        # x, y, w, h
+DRESSER = (0.71, LY - 0.53, 1.52, 0.51)
 
-# door: per Madi (2026-10-17) it spans roughly the i=6..i=7 columns
-# (x ~ 3.2-3.7 m). The y = 0 stretch there is the dresser, so the door is
-# drawn on the y = Ly wall: 0.81 m leaf centred on that span, hinge at the
-# left jamb, swinging inward.
+# pillow recording points at the actual bed head (y = 0 wall)
+PILLOWS = {"left": (1.05, 0.35, 0.65), "right": (1.65, 0.35, 0.65)}
+
+# door on the y = 0 wall: 0.81 m leaf centred on the i=6..i=7 span,
+# hinge at the left jamb, swinging inward.
 DOOR_HINGE, DOOR_W = 3.08, 0.81
 
 
@@ -74,9 +80,9 @@ def write_manifest(path):
         w = csv.writer(fh)
         w.writerow(["file", "tag", "x", "y", "z", "cal_file", "notes"])
         for name, (x, y, z) in PILLOWS.items():
-            w.writerow([f"pillow-{name.lower()}.wav", "pillow",
+            w.writerow([f"pillow-{name}.wav", "pillow",
                         f"{x:.3f}", f"{y:.3f}", f"{z:.2f}",
-                        "umik1-SERIAL.txt", f"pillow point {name}"])
+                        "umik1-SERIAL.txt", f"{name} pillow"])
         for i, j, k, x, y, z in grid_points():
             w.writerow([f"grid-i{i}j{j}-z{int(round(z * 100)):03d}.wav",
                         "grid", f"{x:.3f}", f"{y:.3f}", f"{z:.2f}",
@@ -89,22 +95,21 @@ def draw(path):
     ax.set_facecolor(BG)
     ax.add_patch(Rectangle((0, 0), LX, LY, fill=False, ec=INK, lw=2))
 
-    bed = Rectangle((1.40, 1.66), 1.5, 2.0, fc=SOFT, ec=GRID, lw=1)
-    dresser = Rectangle((2.30, 0.02), 1.52, 0.51, fc=SOFT, ec=GRID, lw=1)
-    ax.add_patch(bed)
-    ax.add_patch(dresser)
-    ax.text(2.15, 2.45, "bed", ha="center", va="center", color=INK,
-            fontsize=10)
-    ax.text(3.06, 0.27, "dresser", ha="center", va="center", color=INK,
-            fontsize=9)
+    ax.add_patch(Rectangle(BED[:2], BED[2], BED[3], fc=SOFT, ec=GRID, lw=1))
+    ax.add_patch(Rectangle(DRESSER[:2], DRESSER[2], DRESSER[3], fc=SOFT,
+                           ec=GRID, lw=1))
+    ax.text(BED[0] + BED[2] / 2, 1.35, "bed\n(head at this wall)",
+            ha="center", va="center", color=INK, fontsize=10)
+    ax.text(DRESSER[0] + DRESSER[2] / 2, LY - 0.27, "dresser", ha="center",
+            va="center", color=INK, fontsize=9)
 
-    # door on the y = Ly wall, spanning roughly the i=6..i=7 columns
-    ax.plot([DOOR_HINGE, DOOR_HINGE + DOOR_W], [LY, LY], color=BG, lw=3,
+    # door on the y = 0 wall, spanning roughly the i=6..i=7 columns
+    ax.plot([DOOR_HINGE, DOOR_HINGE + DOOR_W], [0, 0], color=BG, lw=3,
             zorder=2)
-    ax.plot([DOOR_HINGE, DOOR_HINGE], [LY - DOOR_W, LY], color=INK, lw=1.6)
-    ax.add_patch(Arc((DOOR_HINGE, LY), 2 * DOOR_W, 2 * DOOR_W, angle=0,
-                     theta1=270, theta2=360, ec=GRID, ls=":", lw=1.2))
-    ax.text(DOOR_HINGE + DOOR_W / 2 + 0.12, LY - 0.56, "door", ha="center",
+    ax.plot([DOOR_HINGE, DOOR_HINGE], [0, DOOR_W], color=INK, lw=1.6)
+    ax.add_patch(Arc((DOOR_HINGE, 0), 2 * DOOR_W, 2 * DOOR_W, angle=0,
+                     theta1=0, theta2=90, ec=GRID, ls=":", lw=1.2))
+    ax.text(DOOR_HINGE + DOOR_W / 2 + 0.12, 0.56, "door", ha="center",
             va="center", color=INK, fontsize=9)
 
     # predicted null planes the grid lines land on
@@ -124,8 +129,6 @@ def draw(path):
                     zorder=3)
     for name, (x, y, _) in PILLOWS.items():
         ax.plot([x], [y], "x", ms=11, color=INK, mew=2.4, zorder=4)
-        ax.annotate(name, xy=(x, y), xytext=(x, y - 0.22), ha="center",
-                    color=INK, fontsize=10, fontweight="bold")
 
     for i in range(NX):
         ax.text(DELTA + i * DX, -0.16, f"i={i}", ha="center", va="top",
@@ -137,7 +140,7 @@ def draw(path):
     ax.text(0.02, -0.52,
             "dots: 63 points at z = 0.65 m (pillow plane)   "
             "rings: +32 checkerboard points at z = 1.40 m   "
-            "×: pillow points V1/V2", color=INK, fontsize=9.5)
+            "×: pillow recording points", color=INK, fontsize=9.5)
     ax.text(0.02, -0.68,
             f"x_i = 0.20 + {DX:.3f} i,  y_j = 0.20 + {DY:.3f} j  (m);  "
             "97 placements total, ≈ 3¼ h at ~2 min each",
