@@ -17,7 +17,8 @@ and controller design ([Specification](spec.qmd)), the selected build
 observability check ([Modes](modes.qmd)), a first-pass tone census, and the
 manifest-driven campaign tooling
 ([Measurements](measurements.qmd)). Not started: everything that needs
-hardware — no equipment is owned yet, including the UMIK-1 measurement mic.
+hardware. First orders placed 2026-10-17: the UMIK-1 and the controller
+(NUC barebone + RAM + SSD); everything else is still to acquire.
 
 Dependency structure: Phase 1 (baseline) needs only the UMIK-1; Phase 2
 (simulation) needs no hardware at all, so **Phases 1 and 2 run in
@@ -46,8 +47,10 @@ phase ahead needs it. Prices on the BOM are October 2026 street prices;
 re-check before ordering. M1 is reached cumulatively, when the Phase 4
 list is complete.
 
-- [ ] **0.1** Order the UMIK-1 **first and separately** — it is the only
-  item Phase 1 waits on, and it ships independently of the rest.
+- [x] **0.1** Order the UMIK-1 **first and separately** — it is the only
+  item Phase 1 waits on, and it ships independently of the rest. *Done
+  2026-10-17, together with the controller parts (NUC barebone, RAM,
+  SSD).*
 - [ ] **0.2** Measure the actual cable runs along the baseboards per the
   [layout figure](layout.qmd#fig-layout) before ordering cables (the BOM
   lengths are estimates); order all four TRS runs at full length even for
@@ -71,7 +74,8 @@ the repo (archived separately); manifests, reports and maps are committed.
 
 **Hardware needed:**
 
-- [ ] miniDSP UMIK-1 (with its downloaded calibration file)
+- [x] miniDSP UMIK-1 (with its downloaded calibration file) — ordered
+  2026-10-17
 - [ ] 1× weighted round-base mic stand (reaches pillow height and the
   grid points; counts toward Phase 4's five)
 - [ ] a laptop or any computer for recording (already owned)
@@ -133,9 +137,9 @@ parallel with Phases 0–1.
 
 **Hardware needed:**
 
-- [ ] NUC 14 Essential barebone + 16 GB DDR5-4800 SO-DIMM + 512 GB NVMe
+- [x] NUC 14 Essential barebone + 16 GB DDR5-4800 SO-DIMM + 512 GB NVMe
   SSD (or any N100/N150-class substitute; see
-  [BOM](bom.qmd#selected-build))
+  [BOM](bom.qmd#selected-build)) — ordered 2026-10-17
 - [ ] Gator 8U desktop rack + 1U vented shelf + CyberPower 1U PDU
   (houses interface + controller; see
   [BOM rack housing](bom.qmd#rack-housing))
