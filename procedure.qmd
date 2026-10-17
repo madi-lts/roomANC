@@ -133,7 +133,10 @@ parallel with Phases 0–1.
 
 **Hardware needed:**
 
-- [ ] NUC 14 Essential 16 GB/512 GB (or any N100/N150-class substitute)
+- [ ] Fanless 1U rackmount N100 PC (or any N100/N150-class substitute;
+  see [BOM](bom.qmd#selected-build))
+- [ ] Gator 8U desktop rack + CyberPower 1U PDU (houses interface +
+  controller; see [BOM rack housing](bom.qmd#rack-housing))
 - [ ] Behringer UMC1820 interface
 - [ ] 1–2× PreSonus Eris Sub 8BT (the second enables the 3.4 test-tone
   rehearsal; both are needed by Phase 4 anyway)
@@ -141,10 +144,11 @@ parallel with Phases 0–1.
   (all count toward Phase 4's totals)
 - [ ] 1–2× balanced ¼″ TRS–TRS cables (from the four full-length runs
   ordered in 0.2)
-- [ ] 1× power strip
+- [ ] 1× power strip (far-diagonal sub; the rack side runs off the PDU)
 - [ ] UMIK-1 (from Phase 1) for the independent checks in 3.4/3.5
 
-- [ ] **3.1 Platform setup.** Linux with `PREEMPT_RT` on the NUC;
+- [ ] **3.1 Platform setup.** Linux with `PREEMPT_RT` on the controller
+  PC;
   PipeWire/JACK at the interface's native rate with the controller
   decimating to its 2–4 kHz effective rate; verify a stable xrun-free
   round-trip through the UMC1820.
