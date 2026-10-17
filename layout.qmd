@@ -133,8 +133,8 @@ baseboard cable runs. Positions (origin at S1's corner):
 | M4 | 0.20 | 2.30 | 1.75 | left wall, above $H/2$ |
 | M5 | 2.60 | 0.30 | 1.20 | bottom wall, standing on the dresser |
 | M6 | 2.95 | 3.40 | 2.10 | head wall, tall stand right of bed |
-| V1 | 1.55 | 3.30 | 0.65 | **virtual point**, pillow left (no hardware) |
-| V2 | 2.15 | 3.30 | 0.65 | **virtual point**, pillow right (no hardware) |
+| V1 = P1 | 1.55 | 3.30 | 0.65 | **virtual point**, pillow left — probe mic P1 lives here |
+| V2 = P2 | 2.15 | 3.30 | 0.65 | **virtual point**, pillow right — probe mic P2 lives here |
 
 The generating rules:
 
@@ -187,12 +187,20 @@ $$
 \hat e_v(f) \;=\; \mathbf{w}^{\mathsf H}(f)\, \mathbf{e}(f),
 $$
 where $\mathbf{e}(f)$ is the vector of complex error-mic amplitudes at the
-tone (from the controller's quadrature demodulators). A **calibration
-pass** with a temporary mic lying at each pillow measures, at each tone,
-(a) the secondary paths from each sub to the virtual points,
-$\hat S_{vl}$, and (b) $\mathbf{w}$ by least squares against the live
-drone; FxLMS then runs on $\hat e_v$ with $\hat S_{vl}$ in place of the
-per-mic quantities. Minutes of data per tone.
+tone (from the controller's quadrature demodulators). The calibration
+data comes from a dedicated **probe pair P1/P2** — two more ECM8000s on
+the interface's inputs 7–8, mounted at the virtual points ([BOM selected
+build](bom.qmd#selected-build)): at each tone, (a) the secondary paths
+from each sub to the virtual points, $\hat S_{vl}$, and (b) $\mathbf{w}$
+by least squares against the live drone; FxLMS then runs on $\hat e_v$
+with $\hat S_{vl}$ in place of the per-mic quantities. Minutes of data
+per tone. **The probes never enter the control loop** — they only fit
+and check $\mathbf{w}$ — so a knocked probe degrades monitoring, not
+stability. Having them permanently wired upgrades the one-shot
+calibration into a standing capability: $\mathbf{w}$ re-fits on a
+schedule (e.g. nightly, with the sleeper present, so calibration matches
+operation exactly), and the virtual estimate is validated against a
+direct pillow reading continuously instead of at spot-checks.
 
 How far the physical mics may sit from the pillows is bounded by the
 Monte Carlo in
@@ -216,12 +224,17 @@ positions are displaced **0.46 m** from their virtual points, giving a
 **−20 dB ceiling at 59 Hz** — comfortably under the R2 target band.
 Rules of use:
 
-- Calibrate with the bed occupied if practical: a person is a weak
-  scatterer at $ka \sim 0.2$, but calibration should match operation.
-- Re-fit $\mathbf{w}$ and $\hat S_{vl}$ on every R7 event, and whenever an
-  occasional spot-check with a mic at the pillow shows the virtual
-  residual diverging from the real one; seasonally otherwise
-  (temperature moves eigenfrequencies by only ~0.1 Hz/K at 60 Hz).
+- Calibrate with the bed occupied where possible — the nightly scheduled
+  re-fit does this for free: a person is a weak scatterer at
+  $ka \sim 0.2$, but calibration should match operation.
+- Re-fit $\mathbf{w}$ and $\hat S_{vl}$ on every R7 event and on the
+  nightly schedule; alarm when the live probe reading diverges from the
+  virtual estimate by more than the acceptance margin (temperature moves
+  eigenfrequencies by only ~0.1 Hz/K at 60 Hz, so drift is slow).
+- Probe mounting: short boom clips at the headboard (through foam),
+  capsules at the V1/V2 coordinates, cables dressed down the bed frame —
+  the probes are the one deliberate exception to "no hardware on the
+  bed", affordable because the loop never depends on them.
 
 ## Error microphones: mounting
 

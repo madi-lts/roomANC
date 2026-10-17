@@ -137,9 +137,11 @@ retires into a stereo.
 ## Selected build
 
 The decided plan: an 8-input interface driving a 6-mic perimeter error
-array (two spare inputs for later experiments), with 2 subwoofers to start
-and outputs (and cabling) for 4. Positions and mounting are on the
-[Layout](layout.qmd) page.
+array plus a 2-mic **probe pair at the pillows** (the virtual points
+V1/V2, for [virtual-sensing](layout.qmd#virtual-error-sensing-at-the-pillows)
+calibration and monitoring), with 2 subwoofers to start and outputs (and
+cabling) for 4. Positions and mounting are on the [Layout](layout.qmd)
+page.
 
 | Component | Product | Qty | Unit | Ext. |
 |---|---|:---:|---:|---:|
@@ -147,9 +149,10 @@ and outputs (and cabling) for 4. Positions and mounting are on the
 | Audio interface | [Behringer UMC1820](https://soundpro.com/products/behringer-000-b2j02-00010) — 8 mic in (+48 V in banks of 4), 10 line out | 1 | ~$229 | ~$229 |
 | Subwoofers | [PreSonus Eris Sub 8BT](https://www.sweetwater.com/store/detail/ErisStuSub8BT--presonus-eris-sub-8bt-8-inch-powered-bluetooth-studio-subwoofer) — 8″, 50 W RMS, 30–200 Hz | 2 (→ 4) | $200–250 | $400–500 (→ $800–1,000) |
 | Error mics | [Behringer ECM8000](https://www.markertek.com/product/ecm8000/behringer-ecm8000-omnidirectional-measurement-condenser-microphone) — omni measurement condenser | 6 | ~$26 | ~$156 |
+| Probe mics (P1/P2) | Behringer ECM8000 — same capsule, at the pillows for virtual-sensing calibration/monitoring | 2 | ~$26 | ~$52 |
 | Measurement mic | [miniDSP UMIK-1](https://equipboard.com/items/minidsp-umik-1) (calibration + evidence, R10) | 1 | ~$108 | ~$108 |
 | Reference | Synthesized (tracked-tone oscillator) | — | $0 | $0 |
-| **Total (key components)** | | | | **≈ $1,195–1,355** (2 subs) / **≈ $1,595–1,855** (4) |
+| **Total (key components)** | | | | **≈ $1,245–1,405** (2 subs) / **≈ $1,645–1,905** (4) |
 
 The two-phase subwoofer plan follows the
 [mode analysis](layout.qmd#subwoofers-start-with-2-diagonal-expand-to-4):
@@ -191,7 +194,8 @@ Why these choices fit:
   Grille-protected alternatives at the price, if cat-proofing wins over the
   TRS convenience: [Dayton SUB-1200](https://www.parts-express.com/Dayton-Audio-SUB-1200-Powered-Subwoofer-300-629) (~$200, cloth grille) or
   [BIC America F12](https://www.ooberpad.com/blogs/audio-video-tips/ooberpad-india-reviews-the-bic-america-formula-f12-powered-subwoofer) (~$250 street when in stock, removable grille).
-- **ECM8000 ×6 — the cheaper mic is also the better mic here.** It is an
+- **ECM8000 ×8 (6 error + 2 probe) — the cheaper mic is also the better
+  mic here.** It is an
   **omnidirectional pressure transducer**: a pure pressure observable is
   exactly what the loop should minimize in a modal field, so there is no
   orientation dependence at all (the cardioid Samson C02 considered
@@ -204,15 +208,19 @@ Why these choices fit:
   absolute calibration. It runs on the same +48 V phantom. The owned C02
   pair returns to instrument duty.
 - **UMC1820.** Eight phantom-powered mic inputs (+48 V switchable in banks
-  of 4 — both banks on) for the 6-mic array with two spares, ten balanced
-  line outputs so all four sub runs exist from day one, one clock domain
-  for the whole loop, class-compliant under Linux. The UMIK-1 is USB and
-  independent, so it costs no interface channels. Six perimeter mics
-  over-determine the $6 \times L$ secondary-path matrix for the ~2–3
-  significant modes at 59 Hz and ~3–4 in the harmonic cluster, and keep
-  observability when the cat relocates a stand (see the
-  [count rationale](layout.qmd#error-microphones-a-6-mic-perimeter-array));
-  the spare inputs take mics 7–8 later if the modal model asks for them.
+  of 4 — both banks on): the 6-mic error array on inputs 1–6 and the
+  P1/P2 probe pair on 7–8, so the full channel count is used from day
+  one. Ten balanced line outputs so all four sub runs exist from day one,
+  one clock domain for the whole loop, class-compliant under Linux. The
+  UMIK-1 is USB and independent, so it costs no interface channels. Six
+  perimeter mics over-determine the $6 \times L$ secondary-path matrix
+  for the ~2–3 significant modes at 59 Hz and ~3–4 in the harmonic
+  cluster, and keep observability when the cat relocates a stand (see the
+  [count rationale](layout.qmd#error-microphones-a-6-mic-perimeter-array)).
+  The probe pair never enters the control loop: it serves virtual-sensing
+  calibration, scheduled re-fits and continuous validation
+  ([layout](layout.qmd#virtual-error-sensing-at-the-pillows)), so a
+  knocked probe degrades monitoring, not stability.
 
 ## Supporting items
 
@@ -222,18 +230,18 @@ measure before ordering.
 
 | Item | Qty | Est. | Notes |
 |---|:---:|---:|---|
-| XLR cables, 10–25 ft mix | 6 | $70 | error mics → interface; short baseboard runs along walls |
+| XLR cables, 10–25 ft mix | 8 | $90 | 6 error + 2 probe mics → interface; short baseboard runs along walls |
 | Balanced ¼″ TRS–TRS cables, 10–25 ft mix | 4 | $60 | interface outs → sub TRS inputs; all four runs laid from day one |
-| Weighted round-base mic stands | 3 | $85 | M3/M4/M6 against their walls (M6 needs ~2.1 m reach) |
-| Clamp-on boom arms + short desktop stand | 3 | $55 | M1/M2 on bed frame (through foam); M5 on the dresser |
-| Foam clip pads (shock mounts optional) | 6 | $40 | omni capsules are vibration-tolerant; foam at the clip is cheap insurance |
+| Weighted round-base mic stands | 5 | $140 | M1–M4, M6 against their walls (M6 needs ~2.1 m reach) |
+| Clamp-on boom arms + short desktop stand | 3 | $55 | P1/P2 probes at the headboard (through foam); M5 on the dresser |
+| Foam clip pads (shock mounts optional) | 8 | $50 | omni capsules are vibration-tolerant; foam at the clip is cheap insurance |
 | Subwoofer isolation pads | 2 (→ 4) | $30–55 | floor decoupling: rental, neighbors, structure-borne re-injection |
-| Split-loom / floor cord covers | — | $30 | cat-proofing the baseboard runs (6 mic + 4 sub) |
+| Split-loom / floor cord covers | — | $30 | cat-proofing the baseboard runs (8 mic + 4 sub) |
 | Power strips + extension cords | 2 | $25 | one per diagonal; interface + controller at the dresser |
 | Gaffer tape, zip ties, marking tape | — | $15 | position/rotation marks at every mic and sub (re-ID discipline, R7) |
-| **Subtotal** | | **≈ $400–425** | |
+| **Subtotal** | | **≈ $495–520** | |
 
-**Selected build grand total ≈ $1,595–1,780 with 2 subs, ≈ $1,995–2,280
+**Selected build grand total ≈ $1,740–1,925 with 2 subs, ≈ $2,140–2,425
 with the 4-sub expansion**, including supporting items.
 
 ## Passive adjuncts (any tier)

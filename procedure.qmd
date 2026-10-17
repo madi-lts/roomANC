@@ -161,10 +161,11 @@ height diversity) are load-bearing, not suggestions.
 - [ ] **4.3 Full identification.** The complete $M \times L = 6 \times 2$
   secondary-path bank via the R7 routine; check conditioning against the
   modal-model prediction ($\operatorname{cond}(\Psi) \le 7.1$).
-- [ ] **4.3b Virtual-point calibration.** Temporary mic at each pillow
-  (bed occupied if practical): identify the sub→pillow paths
+- [ ] **4.3b Virtual-point calibration.** Mount the probe pair P1/P2 at
+  the pillows (interface inputs 7–8, headboard clips through foam;
+  [BOM](bom.qmd#selected-build)): identify the sub→probe paths
   $\hat S_{vl}$ at the control tones, then fit the per-tone weights
-  $\mathbf{w}_v$ against the live drone
+  $\mathbf{w}_v$ against the live drone, and schedule the nightly re-fit
   ([spec](spec.qmd#secondary-path-identification-and-virtual-point-calibration-r7),
   [layout](layout.qmd#virtual-error-sensing-at-the-pillows)); verify the
   virtual estimate tracks the direct pillow reading within 3 dB per tone.
