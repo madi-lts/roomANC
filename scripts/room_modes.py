@@ -30,8 +30,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-BG, GRID, INK, SERIES, ACCENT, SOFT = ("#fbf1c7", "#d5c4a1", "#3c3836",
-                                       "#076678", "#af3a03", "#ebdbb2")
+BG, GRID, INK, SERIES, ACCENT, SOFT = ("#1a1a1a", "#404040", "#c9c9c9",
+                                       "#3987e5", "#d95926", "#2e2e2e")
 C = 343.0                      # speed of sound (m/s)
 LX, LY, LZ = 4.445, 3.658, 2.692
 T60 = 0.4                      # assumed reverberation time (s)
@@ -219,16 +219,16 @@ def field_figure(f, fname, z_plan, y_elev):
                         lw=1, ls=":")
     ax.add_patch(bed)
     bx, by, bw, bl = BED_NEW
-    ax.add_patch(plt.Rectangle((bx, by), bw, bl, fill=False, ec="#8ec07c",
+    ax.add_patch(plt.Rectangle((bx, by), bw, bl, fill=False, ec="#34c08e",
                                lw=1.8, ls="--"))
-    ax.plot([HEAD_OPT[0]], [HEAD_OPT[1]], "*", ms=16, color="#8ec07c",
+    ax.plot([HEAD_OPT[0]], [HEAD_OPT[1]], "*", ms=16, color="#34c08e",
             mec=INK, mew=0.8)
     ax.annotate("optimal pillow\n"
                 f"({HEAD_OPT[0]:.2f}, {HEAD_OPT[1]:.2f})",
                 xy=HEAD_OPT, xytext=(HEAD_OPT[0] + 0.28, HEAD_OPT[1] - 0.30),
-                color="#8ec07c", fontsize=9, fontweight="bold")
+                color="#34c08e", fontsize=9, fontweight="bold")
     ax.text(bx + bw / 2, by + bl - 0.14, "proposed bed", ha="center",
-            color="#8ec07c", fontsize=9, fontweight="bold")
+            color="#34c08e", fontsize=9, fontweight="bold")
     ax.set_aspect("equal")
     ax.set_title(f"|p| at {f:g} Hz, z = {z_plan} m (pillow height)",
                  color=INK, fontsize=12, fontweight="bold", loc="left")

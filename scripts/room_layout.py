@@ -13,8 +13,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle, Circle
 
-BG, GRID, INK, SERIES, ACCENT, SOFT = ("#fbf1c7", "#d5c4a1", "#3c3836",
-                                       "#076678", "#af3a03", "#ebdbb2")
+BG, GRID, INK, SERIES, ACCENT, SOFT = ("#1a1a1a", "#404040", "#c9c9c9",
+                                       "#3987e5", "#d95926", "#2e2e2e")
 LX, LY, LZ = 4.445, 3.658, 2.692
 R_NF = 0.93  # near-field exclusion radius ~ lambda/2pi at 59 Hz
 
