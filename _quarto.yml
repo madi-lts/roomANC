@@ -37,11 +37,11 @@ website:
 
 format:
   html:
-    theme:
-      dark: [cosmo, theme-gruvbox-dark.scss]
-      light: [cosmo, theme-gruvbox-light.scss]
+    theme: [cosmo, theme-dark.scss]
+    mermaid:
+      theme: dark
     toc: true
-    highlight-style: gruvbox
+    highlight-style: nord
     html-math-method:
       method: mathjax
       url: assets/mathjax/tex-svg-full.js

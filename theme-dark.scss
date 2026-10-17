@@ -1,0 +1,83 @@
+/*-- scss:defaults --*/
+
+// Neutral dark-grey palette
+$dg-bg-deep: #121212; // navbar, footer, code blocks
+$dg-bg0:     #1a1a1a; // page background
+$dg-bg1:     #232323; // raised surfaces: callouts, inline code, stripes
+$dg-bg2:     #2f2f2f; // borders
+$dg-bg3:     #454545; // strong borders
+$dg-fg0:     #e8e8e8; // headings
+$dg-fg1:     #c9c9c9; // body text
+$dg-fg2:     #a6a6a6; // secondary text
+$dg-fg3:     #8a8a8a; // muted: footer, TOC
+
+// One restrained accent (links, navbar active state)
+$dg-accent:        #3987e5;
+$dg-accent-bright: #6fb0f0;
+
+// Semantic colors (callouts etc.), kept muted
+$dg-green:  #199e70;
+$dg-yellow: #c98a2e;
+$dg-red:    #cf5f56;
+
+// Bootstrap / cosmo mappings
+$body-bg: $dg-bg0;
+$body-color: $dg-fg1;
+$primary: $dg-accent;
+$secondary: $dg-bg2;
+$success: $dg-green;
+$info: $dg-accent;
+$warning: $dg-yellow;
+$danger: $dg-red;
+$light: $dg-bg1;
+$dark: $dg-bg-deep;
+
+$link-color: $dg-accent;
+$link-hover-color: $dg-accent-bright;
+
+$headings-color: $dg-fg0;
+$code-color: $dg-fg0;
+$code-bg: $dg-bg1;
+$pre-bg: $dg-bg-deep;
+
+$border-color: $dg-bg2;
+$table-border-color: $dg-bg2;
+$table-striped-bg: $dg-bg1;
+
+$navbar-bg: $dg-bg-deep;
+$navbar-fg: $dg-fg1;
+$navbar-hl: $dg-accent-bright;
+$footer-bg: $dg-bg-deep;
+$footer-fg: $dg-fg3;
+
+$input-bg: $dg-bg1;
+$input-color: $dg-fg1;
+$input-border-color: $dg-bg3;
+
+$toc-color: $dg-fg3;
+$toc-active-border: $dg-accent;
+
+/*-- scss:rules --*/
+
+.sidebar nav[role="doc-toc"] ul > li > a.active {
+  color: $dg-accent-bright;
+}
+
+div.sourceCode, pre.sourceCode {
+  background-color: $dg-bg-deep;
+  border: 1px solid $dg-bg2;
+}
+
+.table thead {
+  color: $dg-fg0;
+  border-bottom: 2px solid $dg-bg3;
+}
+
+blockquote {
+  border-left: 4px solid $dg-bg3;
+  color: $dg-fg2;
+}
+
+.callout {
+  background-color: $dg-bg1;
+}

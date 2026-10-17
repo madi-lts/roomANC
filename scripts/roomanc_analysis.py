@@ -29,8 +29,8 @@ MIN_PROMINENCE_DB = 8.0
 
 ROOM_LX, ROOM_LY, ROOM_LZ = 4.445, 3.658, 2.692
 
-# gruvbox-light styling to match the project site
-BG, GRID, INK, SERIES, ACCENT = "#fbf1c7", "#d5c4a1", "#3c3836", "#076678", "#af3a03"
+# dark-grey styling to match the project site
+BG, GRID, INK, SERIES, ACCENT = "#1a1a1a", "#404040", "#c9c9c9", "#3987e5", "#d95926"
 
 
 def apply_plot_style(plt):
