@@ -17,8 +17,9 @@ and controller design ([Specification](spec.qmd)), the selected build
 observability check ([Modes](modes.qmd)), a first-pass tone census, and the
 manifest-driven campaign tooling
 ([Measurements](measurements.qmd)). Not started: everything that needs
-hardware. First orders placed 2026-10-17: the UMIK-1 and the controller
-(NUC barebone + RAM + SSD); everything else is still to acquire.
+hardware. First orders placed 2026-10-17: the UMIK-1, the controller
+(NUC barebone + RAM + SSD), and the rack kit (4U walnut rack, 1U shelf,
+1U surge-protector power strip); everything else is still to acquire.
 
 Dependency structure: Phase 1 (baseline) needs only the UMIK-1; Phase 2
 (simulation) needs no hardware at all, so **Phases 1 and 2 run in
@@ -140,9 +141,9 @@ parallel with Phases 0–1.
 - [x] NUC 14 Essential barebone + 16 GB DDR5-4800 SO-DIMM + 512 GB NVMe
   SSD (or any N100/N150-class substitute; see
   [BOM](bom.qmd#selected-build)) — ordered 2026-10-17
-- [ ] Gator 8U desktop rack + 1U vented shelf + CyberPower 1U PDU
-  (houses interface + controller; see
-  [BOM rack housing](bom.qmd#rack-housing))
+- [x] Gator 4U desktop rack (walnut) + 1U vented shelf + 1U
+  surge-protector power strip (houses interface + controller; see
+  [BOM rack housing](bom.qmd#rack-housing)) — ordered 2026-10-17
 - [ ] Behringer UMC1820 interface
 - [ ] 1–2× PreSonus Eris Sub 8BT (the second enables the 3.4 test-tone
   rehearsal; both are needed by Phase 4 anyway)
