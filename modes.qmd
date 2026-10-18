@@ -176,9 +176,10 @@ The layout stands; no further mic moves indicated.
 ## What this changes downstream
 
 - The 59 Hz controller must manage **two** modes of opposite vertical
-  character (§ pressure field), confirming that the common-mode drive of
-  the diagonal sub pair plus height-diverse mics is the right minimal
-  configuration.
+  character (§ pressure field). Height-diverse mics observe both, but the
+  diagonal sub pair drives them only in a fixed ratio; setting them
+  independently room-wide needs an adjacent pair or more corners
+  ([layout](layout.qmd#subwoofers-start-with-2-diagonal-expand-to-4)).
 - Predicted null trenches are where the verification grid
   ([spec](spec.qmd#measurement-and-verification-plan)) should sample most
   densely: residual-pattern failures show up there first.
