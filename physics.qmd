@@ -241,23 +241,27 @@ equation, using $\nabla^2 \psi_{\mathbf{n}} = -k_{\mathbf{n}}^2
 orthogonality relation gives each modal amplitude:
 
 $$
-A_{\mathbf{n}} = \frac{-i\omega\rho_0\, Q_s}{\Lambda_{\mathbf{n}} V}\;
-\frac{\psi_{\mathbf{n}}(\mathbf{r}_s)}
-{k_{\mathbf{n}}^2 - k^2 - i\,k\,k_{\mathbf{n}}/Q_{\mathbf{n}}},
+A_{\mathbf{n}} = G_{\mathbf{n}}(\omega)\, \psi_{\mathbf{n}}(\mathbf{r}_s)\, Q_s,
+\qquad
+G_{\mathbf{n}}(\omega) \equiv \frac{-i\omega\rho_0}
+{\Lambda_{\mathbf{n}} V\left(k_{\mathbf{n}}^2 - k^2 - i\,k\,k_{\mathbf{n}}/\mathcal{Q}_{\mathbf{n}}\right)},
 $$
 
 so that the pressure at a receiver $\mathbf{r}$ is
 
 $$
-p(\mathbf{r}) = -i\omega\rho_0\, Q_s \sum_{\mathbf{n}}
-\frac{\psi_{\mathbf{n}}(\mathbf{r})\,\psi_{\mathbf{n}}(\mathbf{r}_s)}
-{\Lambda_{\mathbf{n}} V\left(k_{\mathbf{n}}^2 - k^2 - i\,k\,k_{\mathbf{n}}/Q_{\mathbf{n}}\right)}.
+p(\mathbf{r}) = Q_s \sum_{\mathbf{n}}
+\psi_{\mathbf{n}}(\mathbf{r})\, G_{\mathbf{n}}(\omega)\,
+\psi_{\mathbf{n}}(\mathbf{r}_s).
 $$
 
-Here $Q_{\mathbf{n}} = f_{\mathbf{n}}/\Delta f$ is the modal quality factor
-(wall and furnishing losses, added phenomenologically; with the assumed
-$T_{60} = 0.4$ s, $\Delta f \approx 5.5$ Hz and $Q \approx 7$–$27$ across
-the band), and the sum is the same damped modal sum the
+Here $\mathcal{Q}_{\mathbf{n}} = f_{\mathbf{n}}/\Delta f$ is the modal quality factor
+(written $\mathcal{Q}$ to keep it apart from the volume velocity $Q_s$;
+wall and furnishing losses, added phenomenologically; with the assumed
+$T_{60} = 0.4$ s, $\Delta f \approx 5.5$ Hz and $\mathcal{Q} \approx 7$–$27$ across
+the band), $G_{\mathbf{n}}(\omega)$ is the modal response (the
+amplitude of mode $\mathbf{n}$ per unit volume velocity injected at an
+antinode), and the sum is the same damped modal sum the
 [Modes](modes.qmd#model) page evaluates numerically. Three things follow
 directly from its form.
 
@@ -268,9 +272,9 @@ directly from its form.
    a node, it does not see that mode however well tuned.
 2. **Tuning supplies gain, position supplies access.** Driving at
    $\omega \to \omega_{\mathbf{n}}$ enhances mode $\mathbf{n}$ by roughly
-   $Q_{\mathbf{n}}$ over its off-resonant neighbours, so a source does
+   $\mathcal{Q}_{\mathbf{n}}$ over its off-resonant neighbours, so a source does
    preferentially drive the mode it is tuned to, provided
-   $\psi_{\mathbf{n}}(\mathbf{r}_s) \neq 0$. With $Q \sim 10$ the
+   $\psi_{\mathbf{n}}(\mathbf{r}_s) \neq 0$. With $\mathcal{Q} \sim 10$ the
    selectivity is modest: at 59 Hz both (1,1,0) (1.7 Hz away) and (0,0,1)
    (4.7 Hz away) sit within one bandwidth, plus an off-resonant background
    from every other mode.
@@ -281,8 +285,7 @@ directly from its form.
    makes a speaker *drive* it in proportion to $\psi_{\mathbf{n}}(\mathbf{r}_s)$.
    The secondary paths the controller identifies (speaker $s$ to mic $m$)
    are $H_{ms}(\omega) = \sum_{\mathbf{n}} \psi_{\mathbf{n}}(\mathbf{r}_m)\,
-   D_{\mathbf{n}}(\omega)\, \psi_{\mathbf{n}}(\mathbf{r}_s)$, with
-   $D_{\mathbf{n}}$ the resonant denominator above: the geometry of the
+   G_{\mathbf{n}}(\omega)\, \psi_{\mathbf{n}}(\mathbf{r}_s)$: the geometry of the
    speakers and of the mics enter symmetrically, which is why the
    [observability analysis](modes.qmd#observability-of-the-6-mic-array) of
    the mics and the placement of the subs use the same matrix of
@@ -327,27 +330,168 @@ near the floor, keep $|\psi_{\mathbf{n}}(\mathbf{r}_s)| \geq 0.9$ for the
 four modes below 65 Hz and $\geq 0.6$ for every mode to 150 Hz. That is
 the physical basis of corner loading on the [Layout](layout.qmd) page.
 
-### How many sources, and where
+### The control equation
 
-Write the field near tone $\omega$ in terms of the $M$ modes that matter
-there (the near-resonant ones, plus the off-resonant background if the
-target is local). Each source $s$ contributes the column
-$b_s = \big(\psi_{\mathbf{n}}(\mathbf{r}_s)\, D_{\mathbf{n}}(\omega)\big)_{\mathbf{n}}$
-to an $M \times N_s$ coupling matrix $B$, and the controller chooses the
-complex source strengths $\mathbf{Q}$ to cancel the primary amplitudes
-$\mathbf{A}^{p}$:
+Everything above was for one source. ANC is the same algebra with two
+kinds of source in the room at once, and it is worth setting out with
+every symbol defined, because the controller, the sub placement and the
+mic placement all live in this one equation.
+
+**Primary and secondary fields.** The *primary* field is the drone as it
+is now: pressure radiated into the room by the HVAC plant through the
+walls, floor and ducts, described by an unknown, distributed source
+density $q_{\mathrm{p}}(\mathbf{r})$. The subscript $\mathrm{p}$ (upright)
+labels "primary" throughout; it is not the pressure $p$. The *secondary*
+field is what the $N_s$ subwoofers add, sub $s = 1, \dots, N_s$ injecting
+the complex volume velocity $Q_s$ (m³/s) at $\mathbf{r}_s$. By linearity
+the total pressure is the sum, and each part has its own modal expansion
+in the same basis $\psi_{\mathbf{n}}$:
 
 $$
-\mathbf{A}^{p} + B\,\mathbf{Q} = 0 .
+p(\mathbf{r}) = \sum_{\mathbf{n}} \Big( A_{\mathrm{p},\mathbf{n}}
++ A_{\mathrm{s},\mathbf{n}} \Big)\, \psi_{\mathbf{n}}(\mathbf{r}).
 $$
 
-Global cancellation of those $M$ modes needs $\operatorname{rank} B = M$,
-and in practice a well-conditioned $B$: the drive needed scales as
-$1/\sigma_{\min}(B)$, and so does the sensitivity to secondary-path errors.
-So the requirement is at least $M$ sources, each placed off the nodal
-surfaces of the modes in question, with **linearly independent coupling
-vectors**. More sources buy independent control and conditioning, not
-reach: a source with zero coupling to a mode adds nothing for it.
+Here $A_{\mathbf{n}}$ is, as before, the complex amplitude (Pa) of mode
+$\mathbf{n}$ in the expansion $p = \sum_{\mathbf{n}} A_{\mathbf{n}}
+\psi_{\mathbf{n}}$, at the single tone frequency $\omega$ under
+consideration; $A_{\mathrm{p},\mathbf{n}}$ is the part produced by the
+drone and $A_{\mathrm{s},\mathbf{n}}$ the part produced by the subs.
+
+**Primary amplitudes.** Projecting the Helmholtz equation with the
+distributed source $q_{\mathrm{p}}$ exactly as for the point source gives
+
+$$
+A_{\mathrm{p},\mathbf{n}} = G_{\mathbf{n}}(\omega)
+\int_V \psi_{\mathbf{n}}(\mathbf{r})\, q_{\mathrm{p}}(\mathbf{r})\, dV .
+$$
+
+The overlap integral is how strongly the drone's source distribution
+projects onto mode $\mathbf{n}$. We never know $q_{\mathrm{p}}$, so the
+$A_{\mathrm{p},\mathbf{n}}$ are unknown, but at fixed $\omega$ they are
+just fixed complex numbers, one per mode, and slowly varying as the plant
+drifts. The overlap integral is what the [Modes](modes.qmd#model) page
+sets to an equal $a_{\mathbf{n}} = 1$ for every mode, and what the baseline
+measurement campaign will constrain.
+
+**Secondary amplitudes and the coupling matrix.** Summing the point-source
+result over subs,
+
+$$
+A_{\mathrm{s},\mathbf{n}} = \sum_{s=1}^{N_s} B_{\mathbf{n}s}\, Q_s,
+\qquad
+B_{\mathbf{n}s} \equiv G_{\mathbf{n}}(\omega)\,
+\psi_{\mathbf{n}}(\mathbf{r}_s).
+$$
+
+$B_{\mathbf{n}s}$ (Pa per m³/s) is the amplitude sub $s$ puts into mode
+$\mathbf{n}$ per unit volume velocity. It factors into a frequency part
+$G_{\mathbf{n}}(\omega)$ that depends only on the room and a geometric part
+$\Phi_{\mathbf{n}s} \equiv \psi_{\mathbf{n}}(\mathbf{r}_s)$ that depends
+only on where the sub is: $B = G\,\Phi$ with
+$G = \operatorname{diag}\big(G_{\mathbf{n}}(\omega)\big)$.
+
+**Cancellation.** Keep the set $\mathcal{M}$ of the $M$ modes that matter
+at the tone (the near-resonant ones; more if the target is a small region
+where off-resonant modes add up). Cancelling them means making every total
+modal amplitude in $\mathcal{M}$ vanish:
+
+$$
+\boxed{\;A_{\mathrm{p},\mathbf{n}} + \sum_{s=1}^{N_s}
+B_{\mathbf{n}s}\, Q_s = 0, \qquad \mathbf{n} \in \mathcal{M}\;}
+\qquad\Longleftrightarrow\qquad
+\mathbf{A}_{\mathrm{p}} + B\,\mathbf{Q} = 0,
+$$
+
+with $\mathbf{A}_{\mathrm{p}} \in \mathbb{C}^{M}$ the primary amplitudes,
+$\mathbf{Q} \in \mathbb{C}^{N_s}$ the sub volume velocities, and
+$B \in \mathbb{C}^{M \times N_s}$. That is $M$ complex linear equations in
+$N_s$ complex unknowns, and the usual three cases apply.
+
+- $N_s = M$: a unique solution $\mathbf{Q} = -B^{-1}\mathbf{A}_{\mathrm{p}}$
+  if and only if $\det B \neq 0$. Since every $G_{\mathbf{n}} \neq 0$,
+  $\det B = \det G \cdot \det \Phi$, so **whether the modes can be
+  controlled is purely geometric**: it is decided by $\det\Phi$, the
+  mode shapes at the sub positions, and no amount of tuning or gain
+  changes it.
+- $N_s < M$: overdetermined. The best the subs can do is minimize the
+  residual acoustic potential energy, which by orthogonality is
+  $J = \sum_{\mathbf{n} \in \mathcal{M}} \Lambda_{\mathbf{n}}
+  \big| A_{\mathrm{p},\mathbf{n}} + \sum_s B_{\mathbf{n}s} Q_s \big|^2$
+  (up to the constant $V/4\rho_0c^2$). Setting
+  $\partial J / \partial Q_s^* = 0$ gives, in index and matrix form,
+  $$
+  \sum_{\mathbf{n}} \Lambda_{\mathbf{n}} B^*_{\mathbf{n}s}
+  \Big( A_{\mathrm{p},\mathbf{n}} + \sum_{s'} B_{\mathbf{n}s'} Q_{s'} \Big) = 0
+  \quad\Longrightarrow\quad
+  \mathbf{Q}_{\mathrm{opt}} = -\big(B^\dagger \Lambda B\big)^{-1}
+  B^\dagger \Lambda\, \mathbf{A}_{\mathrm{p}},
+  $$
+  with $\Lambda = \operatorname{diag}(\Lambda_{\mathbf{n}})$ and $\dagger$
+  the conjugate transpose. The part of $\mathbf{A}_{\mathrm{p}}$ outside
+  the column space of $B$ is left untouched.
+- $N_s > M$: underdetermined, a family of solutions; the controller can
+  spend the extra freedom on minimum drive effort $\|\mathbf{Q}\|^2$ or on
+  cancelling more modes.
+
+**Conditioning.** Write the singular value decomposition of the weighted
+coupling matrix, $\Lambda^{1/2} B = \sum_k \sigma_k\,
+\mathbf{u}_k \mathbf{v}_k^\dagger$, with singular values $\sigma_k$ and
+orthonormal left and right singular vectors $\mathbf{u}_k$ (mode space)
+and $\mathbf{v}_k$ (sub space). The optimal drive is
+
+$$
+\mathbf{Q}_{\mathrm{opt}} = -\sum_k \frac{\mathbf{u}_k^\dagger
+\Lambda^{1/2} \mathbf{A}_{\mathrm{p}}}{\sigma_k}\, \mathbf{v}_k ,
+$$
+
+so the component of the primary field along a weakly coupled direction
+$\mathbf{u}_k$ costs drive $\propto 1/\sigma_k$. A small $\sigma_{\min}$
+means large sub excursions, and it also amplifies errors: if the
+controller's model of $B$ is off by a relative error $\delta$ (a gain or
+phase drift after secondary-path identification), the residual is of
+order $\delta\,|\mathbf{A}_{\mathrm{p}}|$, which caps the suppression at
+roughly $-20\log_{10}\delta$ (a 1 dB gain error, $\delta \approx 0.12$,
+caps it near 18 dB), and the cap tightens along directions with small
+$\sigma_k$. So the requirement on placement is not just
+$\operatorname{rank} B = M$ but a well-conditioned $B$: at least $M$ subs,
+each off the nodal surfaces of the modes in $\mathcal{M}$, with
+**linearly independent coupling vectors**. More subs buy independent
+control and conditioning, not reach: a sub with zero coupling to a mode
+adds nothing for it.
+
+**What the controller actually sees.** The controller never measures
+$A_{\mathbf{n}}$; it sees the pressures $e_m$ at the error mics
+$m = 1, \dots, N_m$, at $\mathbf{r}_m$. Evaluating the total field there,
+with $\Psi_{m\mathbf{n}} \equiv \psi_{\mathbf{n}}(\mathbf{r}_m)$ the
+observability matrix of the [Modes](modes.qmd#observability-of-the-6-mic-array)
+page,
+
+$$
+e_m = \sum_{\mathbf{n}} \Psi_{m\mathbf{n}} \Big( A_{\mathrm{p},\mathbf{n}}
++ \sum_s B_{\mathbf{n}s} Q_s \Big)
+= d_m + \sum_s H_{ms}\, Q_s,
+\qquad
+\mathbf{e} = \Psi\big(\mathbf{A}_{\mathrm{p}} + B\,\mathbf{Q}\big),
+$$
+
+where $d_m = \sum_{\mathbf{n}} \Psi_{m\mathbf{n}} A_{\mathrm{p},\mathbf{n}}$
+is the drone as heard at mic $m$ and
+$H_{ms} = \sum_{\mathbf{n}} \Psi_{m\mathbf{n}} B_{\mathbf{n}s}$ is the
+secondary path from sub $s$ to mic $m$, the quantity identified in
+secondary-path ID. (In hardware the controller sets a drive voltage, not
+$Q_s$; the amplifier and driver response just multiply column $s$ and are
+absorbed into the identified $H_{ms}$.) The multichannel FxLMS controller
+of the [spec](spec.qmd) adapts $\mathbf{Q}$ to minimize
+$\sum_m |e_m|^2$. If $\Psi$ has full column rank on $\mathcal{M}$, then
+$\mathbf{e} = 0$ forces $\mathbf{A}_{\mathrm{p}} + B\mathbf{Q} = 0$ on
+$\mathcal{M}$: driving the mics to zero is the same as cancelling the
+modes. So the two placement problems are the two factors of one product:
+**the subs set $B$ (controllability), the mics set $\Psi$
+(observability)**, and the cancellation is only as good as the worse of
+the two.
+
+### Example: the diagonal sub pair
 
 Symmetric source placements can fail the independence test even at
 corners. The corner couplings differ only in sign, $(-1)^{n_x i_x + n_y i_y
@@ -361,7 +505,18 @@ off-resonant (1,0,0) and (0,1,0) as a lever, which it drives
 differentially), but it cannot set the two dominant 59 Hz modes
 independently over the whole room. An adjacent pair (S1 + S2 or S1 + S3)
 has opposite signs on (1,1,0) and equal signs on (0,0,1), so it spans
-both; so does any three or four corners.
+both; so does any three or four corners. Explicitly, on
+$\mathcal{M} = \{(1,1,0), (0,0,1)\}$ and with the cabinet couplings
+$a = \psi_{110}(\mathbf{r}_{S1}) \approx 0.93$ and
+$b = \psi_{001}(\mathbf{r}_{S1}) \approx 0.94$,
+
+$$
+\Phi_{\text{S1,S4}} = \begin{pmatrix} a & a \\ b & b \end{pmatrix},
+\quad \det = 0;
+\qquad
+\Phi_{\text{S1,S2}} = \begin{pmatrix} a & -a \\ b & b \end{pmatrix},
+\quad \det = 2ab \approx 1.7 .
+$$
 
 ### Where the room is loud, and where the bed sits
 
@@ -386,11 +541,11 @@ null nearly the full spectrum below 150 Hz — it does essentially nothing.
 What does work passively, with caveats:
 
 - **Deep corner traps**: 60–100 cm of rockwool spanning a corner reaches into
-  the velocity field and damps modes (lowers their quality factor $Q$).
+  the velocity field and damps modes (lowers their quality factor $\mathcal{Q}$).
 - **Tuned resonant absorbers** (Helmholtz or membrane), tuned to the drone
   tone. These are narrowband and are defeated by pitch drift of the source.
 
-Lowering modal $Q$ does not remove the tone, but it makes the plant gentler
+Lowering modal $\mathcal{Q}$ does not remove the tone, but it makes the plant gentler
 and the ANC loop easier to stabilize — **passive damping and active control
 are complementary**, not alternatives.
 

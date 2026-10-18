@@ -158,10 +158,11 @@ page.
 
 The two-phase subwoofer plan follows the
 [mode analysis](layout.qmd#subwoofers-start-with-2-diagonal-expand-to-4):
-a diagonal corner pair spans two control degrees of freedom, enough for the
-two near-resonant modes under the 59 Hz tone; corners S2/S3 are pre-cabled
-for expansion if the converged residual keeps a spatial pattern the pair
-cannot null.
+a corner pair spans two control degrees of freedom (the diagonal pair can
+null the pillow points but cannot set the two 59 Hz modes independently;
+an adjacent pair can, and the choice waits on the baseline); the other two
+corners are pre-cabled for expansion if the converged residual keeps a
+spatial pattern the pair cannot null.
 
 Why these choices fit:
 

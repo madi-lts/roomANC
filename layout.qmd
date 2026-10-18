@@ -52,10 +52,20 @@ other two corners (dashed in the figure) as a drop-in expansion:
   $(\pm 1)^{n_x}(\pm 1)^{n_y}$ by corner. For the diagonal pair the
   **common-mode** drive (both subs in phase) couples to **(1,1,0)** — the
   resonant mode under the 59.0 Hz tone — and to (0,0,1), while the
-  **differential** drive couples to (1,0,0) and (0,1,0), though only in a
-  fixed combination. Two subs therefore span two independent control
-  degrees of freedom per frequency, enough to null the two near-resonant
-  modes that dominate at 59 Hz.
+  **differential** drive couples to (1,0,0) and (0,1,0), each pair only in
+  a fixed combination. The two control degrees of freedom are therefore
+  *not* enough to set the two near-resonant 59 Hz modes independently:
+  S1 and S4 have identical couplings to both (1,1,0) and (0,0,1), so their
+  coupling matrix on those two modes is singular
+  ([physics](physics.qmd#example-the-diagonal-sub-pair)). The pair can
+  still null the field at two chosen points, such as the virtual pillow
+  sensors, by using the off-resonant (1,0,0) and (0,1,0) as a lever, but
+  not the two modes room-wide.
+- An **adjacent pair** (S1 + S2 or S1 + S3) has opposite signs on (1,1,0)
+  and equal signs on (0,0,1), so it does span both 59 Hz modes; it also
+  separates (1,0,0) from (0,1,0) at 39.9 Hz. Which pair to build first is
+  deferred to the baseline campaign, once it shows whether 39.9 Hz or
+  59 Hz dominates and how much of the 59 Hz field is (0,0,1).
 - The expansion criterion is empirical (spec R2's grid test): if the
   converged residual at any tone retains a spatial pattern the pair cannot
   null — the signature being error mics converged low while grid points
