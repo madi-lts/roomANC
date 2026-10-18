@@ -65,7 +65,16 @@ stronger relative to 59 Hz than shown, and absolute levels mean nothing.
 
 All three are driven by `scripts/analyze_campaign.py` from a manifest CSV
 (one row per recording: file, tag, position $x,y,z$ in the
-[layout](layout.qmd) room frame, calibration file). With a UMIK-1
+[layout](layout.qmd) room frame, calibration file, reference file). The
+source is intermittent — the HVAC and pumps cycle on ~30 s–1 min
+timescales, independently per machine — so every per-tone level is
+computed from source-on frames only: 2 s STFT frames are classified
+on/off per tone from the in-band level of a fixed reference channel
+recorded simultaneously with each roving placement, and map/A/B levels
+are reported as ratios to that reference, cancelling source-level
+variation between points (full recipe: the
+[intermittent-source protocol](procedure.qmd#intermittent-source-protocol)
+on the Procedure page). With a UMIK-1
 calibration file (sensitivity $S$ in dBFS re 94 dB SPL at 1 kHz, plus a
 response correction $c(f)$ in dB), levels convert as
 $L_p(f) = L_\mathrm{FS}(f) + (94 - S) + c(f)$, where $L_\mathrm{FS}$ is the
