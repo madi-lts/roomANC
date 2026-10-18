@@ -28,8 +28,11 @@ inside the ~0.74 m Nyquist bound for nx = 3.
 
 Placements: the full 9x7 = 63 points at z = 0.65 m, a 32-point
 checkerboard ((i+j) even) at z = 1.40 m, plus the two pillow recording
-points -- 97 single-mic placements, ~3h15 at ~2 min each, splittable by
-height pass.
+points -- 97 single-mic placements, splittable by height pass. The HVAC
+and pumps cycle on ~30 s - 1 min timescales, so each placement records
+until it has caught >= 2 source-on intervals (typically 2-3 min), together
+with a simultaneous fixed reference channel (the ref_file manifest column;
+intermittent-source protocol on the Procedure page) -- ~4-5 h total.
 """
 import csv
 import os
@@ -77,17 +80,25 @@ def grid_points():
 
 
 def write_manifest(path):
+    # ref_file: the fixed reference channel (one ECM8000 on the UMC1820,
+    # taped in place all session) recorded simultaneously with each roving
+    # UMIK-1 placement — the intermittent-source protocol on the Procedure
+    # page. Analysis gates each tone to source-on frames via the reference
+    # and reports each point as a ratio to it.
     with open(path, "w", newline="") as fh:
         w = csv.writer(fh)
-        w.writerow(["file", "tag", "x", "y", "z", "cal_file", "notes"])
+        w.writerow(["file", "tag", "x", "y", "z", "cal_file", "ref_file",
+                    "notes"])
         for name, (x, y, z) in PILLOWS.items():
             w.writerow([f"pillow-{name}.wav", "pillow",
                         f"{x:.3f}", f"{y:.3f}", f"{z:.2f}",
-                        "umik1-SERIAL.txt", f"{name} pillow"])
+                        "umik1-SERIAL.txt", f"pillow-{name}-ref.wav",
+                        f"{name} pillow"])
         for i, j, k, x, y, z in grid_points():
-            w.writerow([f"grid-i{i}j{j}-z{int(round(z * 100)):03d}.wav",
-                        "grid", f"{x:.3f}", f"{y:.3f}", f"{z:.2f}",
-                        "umik1-SERIAL.txt", ""])
+            stem = f"grid-i{i}j{j}-z{int(round(z * 100)):03d}"
+            w.writerow([f"{stem}.wav", "grid",
+                        f"{x:.3f}", f"{y:.3f}", f"{z:.2f}",
+                        "umik1-SERIAL.txt", f"{stem}-ref.wav", ""])
 
 
 def draw(path):
@@ -144,7 +155,8 @@ def draw(path):
             "×: pillow recording points", color=INK, fontsize=9.5)
     ax.text(LX - 0.02, LY + 0.68,
             f"x_i = 0.20 + {DX:.3f} i,  y_j = 0.20 + {DY:.3f} j  (m);  "
-            "97 placements total, ≈ 3¼ h at ~2 min each",
+            "97 placements total, ≈ 4–5 h at ~2–3 min each "
+            "(each must catch ≥ 2 source-on cycles)",
             color=INK, fontsize=9.5)
     ax.text(LX - 0.02, LY + 0.84,
             "view rotated 180°: origin (S1 corner) at top right, "

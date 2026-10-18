@@ -73,32 +73,97 @@ The three baseline measurements of the [verification
 plan](spec.qmd#measurement-and-verification-plan), run through
 [`scripts/analyze_campaign.py`](https://github.com/madi-lts/roomANC/blob/master/scripts/analyze_campaign.py)
 from a manifest CSV (one row per recording: file, tag, position in the
-[layout](layout.qmd) room frame, calibration file). Raw WAVs stay out of
-the repo (archived separately); manifests, reports and maps are committed.
+[layout](layout.qmd) room frame, calibration file, reference file). Raw
+WAVs stay out of the repo (archived separately); manifests, reports and
+maps are committed. Every recording in this phase follows the
+[intermittent-source protocol](#intermittent-source-protocol) below.
 
 **Hardware needed:**
 
 - [x] miniDSP UMIK-1 (with its downloaded calibration file) — ordered
   2026-10-17
+- [x] UMC1820 + 1× ECM8000 as the fixed reference channel (owned; see
+  the protocol below)
+- [ ] 1× XLR cable for the reference mic (counts toward Phase 4's eight)
 - [ ] 1× weighted round-base mic stand (reaches pillow height and the
-  grid points; counts toward Phase 4's five)
+  grid points; counts toward Phase 4's five; the reference mic needs no
+  stand — a rigid surface through foam works)
 - [ ] a laptop or any computer for recording (already owned)
+
+### Intermittent-source protocol {#intermittent-source-protocol}
+
+The HVAC and pumps cycle on roughly 30 s–1 min timescales, each machine
+independently, which breaks a naive move-one-mic campaign three ways: a
+point recorded during an off interval reads as a null; points holding
+different on/off mixtures acquire a spurious offset
+$10\log_{10} D$ ($D$ = the source's duty cycle, the on fraction, within
+that point's analysis window), which masquerades as spatial structure;
+and the on-state source level itself need not be constant over a
+multi-hour session. Simply recording longer does not fix this: the
+time-averaged level converges to (on-level $+\,10\log_{10} D$), and $D$
+follows the thermostat and the weather, so points taken hours apart still
+disagree. Instead, every Phase 1 recording follows this recipe:
+
+1. **Fixed reference channel.** One ECM8000 on the UMC1820 sits at a
+   single taped-down position for the whole session — in a corner, where
+   every rigid-wall mode has a pressure antinode, so each target tone has
+   maximal SNR (the dresser top at its wall end works, through a foam
+   pad). Interface gain is set once and taped. The reference is never
+   calibrated and never needs to be: it only enters as a ratio, same mic
+   and gain throughout.
+2. **A simultaneous pair per point.** Each roving UMIK-1 placement is
+   recorded together with a reference recording started within about a
+   second of it (two recorders is fine — no sample synchronization is
+   needed, because the analysis compares band levels over 2 s frames and
+   erodes one frame at each on/off edge, absorbing ±1 s of
+   misalignment). The manifest's `ref_file` column names the pair.
+3. **Per-tone gating.** The analysis classifies each 2 s frame as
+   source-on or source-off *per tone* — the 39.9, 59 and 120 Hz machines
+   cycle independently — from the reference channel's in-band level
+   (threshold halfway between the 10th and 90th percentile frame levels;
+   a spread under 6 dB means that tone never switched during the
+   recording). Gating on the reference rather than the roving channel is
+   the point: a roving mic on a nodal surface cannot distinguish "source
+   off" from "I am on a null"; the fixed corner mic always can.
+4. **Levels are ratios.** Each point's reported per-tone level is its
+   on-frame band level minus the reference's own simultaneous on-frame
+   level, cancelling slow variation of the source strength between
+   points. Absolute SPL still comes out of the UMIK-1 calibration where
+   it matters (the pillow census, 1.1).
+5. **A point is done** when every *cycling* target tone has caught at
+   least 2 distinct on-intervals and ≥ 20 s of cumulative on-time —
+   typically 2–3 min per placement, occasionally longer while a machine
+   rests. `analyze_campaign.py map` flags under-captured point–tone
+   pairs in a revisit list; budget ~4–5 h for the full 97-placement
+   grid, splittable by height pass.
+6. **End-of-session drift check.** Re-record the pillow pair (and any
+   repeated anchor points the final point set includes) before tearing
+   down; the reference-normalized on-levels must repeat within about
+   1.5 dB per tone. A larger disagreement means the reference moved, a
+   gain changed, or the on/off classification failed — find which
+   before trusting the day's map.
 
 - [ ] **1.1 Calibrated tone census** (`spectra` subcommand). Multi-minute
   recording at pillow height (the virtual points V1/V2 in the
   [layout](layout.qmd#error-microphones-a-6-mic-perimeter-array), 0.65 m);
-  Welch PSD at ≥ 0.1 Hz resolution. Deliverables: absolute SPL of each
-  tone, the broadband floor, and drift statistics
-  $\hat{\omega}_k(t)$ for the tone tracker (R4's ±2 %, ≤ 1 Hz/min
-  envelope is confirmed or revised here). Repeat at 2–3 times of day to
-  catch HVAC duty-cycle states.
-- [ ] **1.2 Level-vs-position map** (`map` subcommand). Per-tone
-  band-integrated level on a ~0.5 m grid at two heights (0.65 m pillow
-  plane and ~1.4 m). Deliverable: the measured antinode/null geometry.
+  Welch PSD at ≥ 0.1 Hz resolution. Deliverables: absolute *on-state* SPL
+  of each tone with its duty cycle and on/off interval statistics, the
+  broadband floor, and drift statistics $\hat{\omega}_k(t)$ computed over
+  source-on frames only (R4's ±2 %, ≤ 1 Hz/min envelope is confirmed or
+  revised here — and the on/off cycling itself is R4's step-change case).
+  Repeat at 2–3 times of day to catch HVAC duty-cycle states.
+- [ ] **1.2 Level-vs-position map** (`map` subcommand). Per-tone,
+  source-on, reference-normalized band level at each point of the final
+  grid at two heights (0.65 m pillow plane and ~1.4 m). Deliverable: the
+  measured antinode/null geometry. Clear the revisit list before calling
+  the map done.
 - [ ] **1.3 Open-window A/B** (`ab` subcommand). Interleaved
-  window-closed/open recordings; if the tones barely change, the path is
-  structure-borne ([physics](physics.qmd#structure-borne-path)) —
-  evidence for the landlord track either way (R10).
+  window-closed/open recordings, compared in reference-normalized
+  on-state levels — so a thermostat duty change or source-level drift
+  between conditions cannot fake (or hide) an airborne path. If the tones
+  barely change, the path is structure-borne
+  ([physics](physics.qmd#structure-borne-path)) — evidence for the
+  landlord track either way (R10).
 - [ ] **1.4 Validate the modal model.** Overlay 1.2's map on the
   [Modes](modes.qmd) pressure fields: do the predicted (1,1,0) and
   (0,0,1) null surfaces appear, and how far have compliant walls pulled

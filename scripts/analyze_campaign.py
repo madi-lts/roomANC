@@ -2,10 +2,21 @@
 """Baseline measurement campaign analysis: calibrated spectra, level map, A/B.
 
 Recordings are listed in a manifest CSV (columns: file, tag, x, y, z,
-cal_file, notes; paths relative to the manifest). Coordinates are metres in
-the room frame of scripts/room_layout.py. A cal_file (miniDSP UMIK-1 / REW
-text format) makes that recording's levels absolute dB SPL; without one,
-levels stay relative dBFS.
+cal_file, ref_file, notes; paths relative to the manifest). Coordinates are
+metres in the room frame of scripts/room_layout.py. A cal_file (miniDSP
+UMIK-1 / REW text format) makes that recording's levels absolute dB SPL;
+without one, levels stay relative dBFS.
+
+Intermittent source (procedure, Phase 1 protocol): the HVAC and pumps cycle
+on ~30 s - 1 min timescales, independently per machine, so every per-tone
+level here is computed from source-ON frames only (2 s frames classified
+on/off per tone; see roomanc_analysis.tone_gate). ref_file, when present,
+names the fixed reference channel recorded simultaneously with that row:
+the on/off state is then read from the reference (immune to the roving mic
+sitting on a null), and the map/ab levels are reported as the ratio to the
+reference's own on-level, cancelling source-level variation between points.
+Points that caught < MIN_ON_INTERVALS on-intervals or < MIN_ON_SECONDS of
+cumulative on-time for a cycling tone are flagged for a revisit.
 
 Subcommands
 -----------
@@ -34,10 +45,11 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from scipy.interpolate import griddata
 
-from roomanc_analysis import (ACCENT, GRID, INK, ROOM_LX, ROOM_LY, SERIES,
-                              apply_plot_style, band_level_db, drift_stats,
-                              load_wav, read_manifest, tonal_peaks,
-                              track_tone, welch_db)
+from roomanc_analysis import (ACCENT, GRID, INK, MIN_ON_INTERVALS,
+                              MIN_ON_SECONDS, ROOM_LX, ROOM_LY, SERIES,
+                              apply_plot_style, drift_stats,
+                              frame_spectrogram, load_wav, read_manifest,
+                              tonal_peaks, tone_gate, track_tone, welch_db)
 
 FMAX_CONTROL = 150.0   # Hz, control band upper edge (spec R1)
 AUTO_TONE_PROM_DB = 12.0
@@ -59,6 +71,65 @@ def level_units(rows):
     raise SystemExit("error: manifest mixes calibrated and uncalibrated "
                      "recordings in one comparison; give every row a "
                      "cal_file or none")
+
+
+def ref_mode(rows):
+    """True if every row has a ref_file, False if none does.
+
+    Mixing referenced and unreferenced recordings in one comparison is
+    refused: with a reference, levels are ratios to the fixed channel;
+    without, they are absolute — not a common scale.
+    """
+    has = [r.ref_file is not None for r in rows]
+    if all(has):
+        return True
+    if not any(has):
+        return False
+    raise SystemExit("error: manifest mixes rows with and without ref_file "
+                     "in one comparison; give every row a reference "
+                     "recording or none")
+
+
+def gated_tone_levels(rec, tones, half_bw):
+    """Per-tone source-ON level of one recording, reference-gated if possible.
+
+    Returns {tone: dict} with keys
+      level: ON-frame band level, calibrated if rec is (None: no ON frames)
+      rel:   level minus the reference channel's own ON level (None: no ref)
+      act:   the ToneGate describing source activity (the reference's when
+             present — the fixed channel sees the on/off state even when the
+             roving mic sits on a null; the recording's own otherwise)
+    """
+    fs, x = load_wav(rec.file)
+    spec = frame_spectrogram(x, fs)
+    spec_r = None
+    if rec.ref_file:
+        fs_r, xr = load_wav(rec.ref_file)
+        spec_r = frame_spectrogram(xr, fs_r)
+    out = {}
+    for t in tones:
+        g = tone_gate(x, fs, t, half_bw=half_bw, spec=spec)
+        if spec_r is not None:
+            gr = tone_gate(xr, fs_r, t, half_bw=half_bw, spec=spec_r)
+            lv = g.level_over(gr.mask_at(g.t))
+            ref_lv, act = gr.level_on_db, gr
+        else:
+            lv, ref_lv, act = g.level_on_db, None, g
+        if lv is not None and rec.calibrated:
+            lv = float(rec.cal.dbfs_to_spl(t, lv))
+        rel = None if (lv is None or ref_lv is None) else lv - ref_lv
+        out[t] = {"level": lv, "rel": rel, "act": act}
+    return out
+
+
+def incomplete(act):
+    """True when a cycling tone was not captured well enough at this point.
+
+    A steady gate (no off state seen) is not flagged: with a reference that
+    means the source simply stayed on; without one it may also mean a null,
+    which is exactly why the protocol wants ref_file set.
+    """
+    return not act.steady and not act.done()
 
 
 def analyzed_spectrum(rec):
@@ -123,11 +194,36 @@ def cmd_spectra(args):
                  f"{'prominence (dB)':>16}"]
         for fp, lv, pr in peaks:
             lines.append(f"{fp:9.2f}  {lv:18.1f}  {pr:16.1f}")
+        lines.append("")
+        lines.append("source state per tone (2 s frames; levels above are "
+                     "whole-recording averages, diluted by off-time):")
+        spec = frame_spectrogram(x, fs)
+        gates = {fp: tone_gate(x, fs, fp, spec=spec)
+                 for fp, _, _ in peaks[:6]}
+        for fp, lv, pr in peaks[:6]:
+            g = gates[fp]
+            on_lv = g.level_on_db
+            if rec.calibrated and on_lv is not None:
+                on_lv = float(rec.cal.dbfs_to_spl(fp, on_lv))
+            off = g.level_off_db
+            if rec.calibrated and off is not None:
+                off = float(rec.cal.dbfs_to_spl(fp, off))
+            if g.steady:
+                lines.append(f"  {fp:7.2f} Hz: steady (no off state seen; "
+                             f"frame-level spread {g.split_db:.1f} dB), "
+                             f"on-level {on_lv:.1f} {units}")
+            else:
+                lines.append(
+                    f"  {fp:7.2f} Hz: duty {100 * g.on_fraction:.0f}%, "
+                    f"{g.n_on_intervals} on-interval(s), "
+                    f"{g.on_seconds:.0f} s on; on-level {on_lv:.1f}, "
+                    f"off {off:.1f} {units}")
         if dur >= DRIFT_MIN_SECONDS:
             lines.append("")
-            lines.append("drift statistics (2 s frames, 50% overlap):")
+            lines.append("drift statistics (2 s frames, 50% overlap, "
+                         "source-on frames only):")
             for fp, lv, pr in peaks[:4]:
-                st = drift_stats(*track_tone(x, fs, fp))
+                st = drift_stats(*track_tone(x, fs, fp, gate=gates.get(fp)))
                 if st is None:
                     lines.append(f"  {fp:7.2f} Hz: track too short")
                     continue
@@ -150,34 +246,55 @@ def cmd_map(args):
         raise SystemExit("error: need >= 3 positioned rows "
                          "(tag grid/pillow with x,y,z) for a map")
     units = level_units(rows)
+    use_ref = ref_mode(rows)
     tones = pick_tones(rows, args.tones)
     os.makedirs(args.outdir, exist_ok=True)
     apply_plot_style(plt)
 
-    table = []   # (tone, x, y, z, level, file)
+    table = []    # dict per (recording, tone)
+    revisit = []  # (file, tone, reason)
     for rec in rows:
-        _, _, f, db = analyzed_spectrum(rec)
+        levels = gated_tone_levels(rec, tones, args.half_bw)
         for t in tones:
-            lv = band_level_db(f, db, t, half_bw=args.half_bw)
-            if lv is not None:
-                table.append((t, rec.x, rec.y, rec.z, lv,
-                              os.path.basename(rec.file)))
+            lv, rel, act = (levels[t][k] for k in ("level", "rel", "act"))
+            name = os.path.basename(rec.file)
+            if lv is None:
+                revisit.append((name, t, "no source-on frames captured"))
+                continue
+            if incomplete(act):
+                revisit.append(
+                    (name, t,
+                     f"only {act.n_on_intervals} on-interval(s), "
+                     f"{act.on_seconds:.0f} s on-time "
+                     f"(need >= {MIN_ON_INTERVALS}, {MIN_ON_SECONDS:.0f} s)"))
+            table.append({"tone": t, "x": rec.x, "y": rec.y, "z": rec.z,
+                          "level": lv, "rel": rel,
+                          "on_fraction": act.on_fraction,
+                          "on_s": act.on_seconds,
+                          "n_on": act.n_on_intervals,
+                          "steady": act.steady, "file": name})
 
     csv_path = os.path.join(args.outdir, "levels.csv")
     with open(csv_path, "w", newline="") as fh:
         w = csv.writer(fh)
-        w.writerow(["tone_hz", "x_m", "y_m", "z_m", f"level_{units.replace(' ', '_')}",
+        w.writerow(["tone_hz", "x_m", "y_m", "z_m",
+                    f"level_on_{units.replace(' ', '_')}", "rel_db",
+                    "on_fraction", "on_s", "n_on_intervals", "steady",
                     "file"])
-        for row in table:
-            w.writerow([f"{row[0]:.2f}", f"{row[1]:.3f}", f"{row[2]:.3f}",
-                        f"{row[3]:.3f}", f"{row[4]:.2f}", row[5]])
+        for r in table:
+            w.writerow([f"{r['tone']:.2f}", f"{r['x']:.3f}", f"{r['y']:.3f}",
+                        f"{r['z']:.3f}", f"{r['level']:.2f}",
+                        "" if r["rel"] is None else f"{r['rel']:.2f}",
+                        f"{r['on_fraction']:.2f}", f"{r['on_s']:.0f}",
+                        r["n_on"], int(r["steady"]), r["file"]])
     print(f"wrote {csv_path} ({len(table)} rows)")
 
-    heights = sorted({row[3] for row in table})
+    heights = sorted({r["z"] for r in table})
     for t in tones:
         for z in heights:
-            pts = [(x, y, lv) for (tt, x, y, zz, lv, _) in table
-                   if tt == t and zz == z]
+            pts = [(r["x"], r["y"], r["rel"] if use_ref else r["level"])
+                   for r in table if r["tone"] == t and r["z"] == z
+                   and (r["rel"] is not None if use_ref else True)]
             if len(pts) < 3:
                 continue
             xs, ys, lvs = map(np.asarray, zip(*pts))
@@ -200,14 +317,21 @@ def cmd_map(args):
             ax.set_aspect("equal")
             ax.set_xlabel("x (m)")
             ax.set_ylabel("y (m)")
-            ax.set_title(f"{t:.1f} Hz level map at z = {z:.2f} m "
+            ax.set_title(f"{t:.1f} Hz source-on level map at z = {z:.2f} m "
                          f"({len(pts)} points)", loc="left", fontweight="bold")
-            fig.colorbar(pc, ax=ax, label=f"band level ({units}), "
-                                          f"±{args.half_bw:g} Hz")
+            cb_label = (f"on-level re reference (dB), ±{args.half_bw:g} Hz"
+                        if use_ref else
+                        f"on-state band level ({units}), ±{args.half_bw:g} Hz")
+            fig.colorbar(pc, ax=ax, label=cb_label)
             out = os.path.join(args.outdir, f"map-{t:.1f}Hz-z{z:.2f}m.png")
             fig.savefig(out, dpi=150)
             plt.close(fig)
             print(f"wrote {out}")
+
+    if revisit:
+        print(f"\nrevisit ({len(revisit)} point-tone pairs under-captured):")
+        for name, t, why in revisit:
+            print(f"  {name} @ {t:.1f} Hz: {why}")
 
 
 def cmd_ab(args):
@@ -218,26 +342,40 @@ def cmd_ab(args):
         raise SystemExit(f"error: need rows tagged '{args.tag_a}' and "
                          f"'{args.tag_b}'")
     units = level_units(a + b)
+    use_ref = ref_mode(a + b)
     tones = pick_tones(rows, args.tones)
     os.makedirs(args.outdir, exist_ok=True)
 
     def mean_levels(group):
-        """Power-mean band level per tone across a tag's recordings."""
-        out = {}
-        for t in tones:
-            vals = []
-            for rec in group:
-                _, _, f, db = analyzed_spectrum(rec)
-                lv = band_level_db(f, db, t, half_bw=args.half_bw)
-                if lv is not None:
-                    vals.append(lv)
-            if vals:
-                out[t] = 10.0 * np.log10(np.mean(10.0 ** (np.asarray(vals) / 10.0)))
-        return out
+        """Power-mean source-ON level per tone across a tag's recordings.
+
+        With references, each value is the ratio to the fixed channel, so
+        A and B stay comparable even when the source ran louder or longer
+        in one condition.
+        """
+        vals = {t: [] for t in tones}
+        for rec in group:
+            levels = gated_tone_levels(rec, tones, args.half_bw)
+            for t in tones:
+                v = levels[t]["rel"] if use_ref else levels[t]["level"]
+                if v is None:
+                    print(f"warning: {os.path.basename(rec.file)} caught no "
+                          f"source-on frames at {t:.1f} Hz; skipped")
+                    continue
+                if incomplete(levels[t]["act"]):
+                    print(f"warning: {os.path.basename(rec.file)} "
+                          f"under-captured {t:.1f} Hz "
+                          f"({levels[t]['act'].n_on_intervals} on-interval(s), "
+                          f"{levels[t]['act'].on_seconds:.0f} s)")
+                vals[t].append(v)
+        return {t: 10.0 * np.log10(np.mean(10.0 ** (np.asarray(v) / 10.0)))
+                for t, v in vals.items() if v}
 
     la, lb = mean_levels(a), mean_levels(b)
+    units_note = ("dB re reference, source-on" if use_ref
+                  else f"{units}, source-on")
     lines = [f"A = {args.tag_a} ({len(a)} rec), B = {args.tag_b} "
-             f"({len(b)} rec), levels in {units}, band ±{args.half_bw:g} Hz",
+             f"({len(b)} rec), levels in {units_note}, band ±{args.half_bw:g} Hz",
              "",
              f"{'f (Hz)':>9}  {'A':>8}  {'B':>8}  {'B - A (dB)':>11}"]
     for t in tones:
