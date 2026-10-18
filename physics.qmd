@@ -262,8 +262,61 @@ $T_{60} = 0.4$ s, $\Delta f \approx 5.5$ Hz and $\mathcal{Q} \approx 7$–$27$ a
 the band), $G_{\mathbf{n}}(\omega)$ is the modal response (the
 amplitude of mode $\mathbf{n}$ per unit volume velocity injected at an
 antinode), and the sum is the same damped modal sum the
-[Modes](modes.qmd#model) page evaluates numerically. Three things follow
-directly from its form.
+[Modes](modes.qmd#model) page evaluates numerically.
+
+The section title is literal: $G_{\mathbf{n}}(\omega)$ is the
+$\mathbf{n}$-th coefficient of the room's Green's function, up to the
+source-strength factor. Define the **Green's function**
+$G(\mathbf{r}, \mathbf{r}_s)$ of the Helmholtz operator with rigid
+(Neumann) walls as the solution of
+
+$$
+\left(\nabla^2 + k^2\right) G(\mathbf{r}, \mathbf{r}_s)
+= -\,\delta(\mathbf{r} - \mathbf{r}_s),
+\qquad
+\hat{\mathbf{n}} \cdot \nabla G = 0 \ \text{on the walls},
+$$
+
+with $\delta$ the three-dimensional Dirac distribution and
+$\hat{\mathbf{n}}$ the wall normal. Expanding $G$ in the eigenfunctions
+$\psi_{\mathbf{n}}$ (the bilinear, or spectral, representation — the same
+diagonalization used for any normal operator) and projecting with the
+orthogonality relation gives
+
+$$
+G(\mathbf{r}, \mathbf{r}_s) = \sum_{\mathbf{n}}
+\frac{\psi_{\mathbf{n}}(\mathbf{r})\,\psi_{\mathbf{n}}(\mathbf{r}_s)}
+{\Lambda_{\mathbf{n}}\, V \left(k_{\mathbf{n}}^2 - k^2\right)}.
+$$
+
+The monopole enters the Helmholtz equation as
+$(\nabla^2 + k^2)\, p = i\omega\rho_0\, Q_s\,
+\delta(\mathbf{r} - \mathbf{r}_s)$, so
+$p(\mathbf{r}) = -\,i\omega\rho_0\, Q_s\, G(\mathbf{r}, \mathbf{r}_s)$,
+and comparing term by term with the modal sum above:
+
+$$
+G_{\mathbf{n}}(\omega) = -\,i\omega\rho_0 \times
+\frac{1}{\Lambda_{\mathbf{n}}\, V \left(k_{\mathbf{n}}^2 - k^2\right)},
+$$
+
+i.e. $G_{\mathbf{n}}(\omega)$ is $-i\omega\rho_0$ times the bare spectral
+coefficient of $G$. The factor $-i\omega\rho_0$ converts source strength
+(volume velocity) into pressure, making
+$p/Q_s = \sum_{\mathbf{n}} \psi_{\mathbf{n}}(\mathbf{r})\,
+G_{\mathbf{n}}(\omega)\, \psi_{\mathbf{n}}(\mathbf{r}_s)$ a transfer
+**impedance** (Pa per m³/s) rather than the kernel of
+$(\nabla^2 + k^2)^{-1}$ itself. Damping enters by the phenomenological
+pole shift $k_{\mathbf{n}}^2 \to k_{\mathbf{n}}^2 -
+i\,k\,k_{\mathbf{n}}/\mathcal{Q}_{\mathbf{n}}$, which moves each modal pole
+off the real-$\omega$ axis (the lossy room has quasi-modes with finite
+linewidth $\Delta f = f_{\mathbf{n}}/\mathcal{Q}_{\mathbf{n}}$); that
+substitution in the expression above reproduces the definition of
+$G_{\mathbf{n}}(\omega)$ given at the top of this section. The symmetry of
+$G$ under $\mathbf{r} \leftrightarrow \mathbf{r}_s$ is the acoustic
+reciprocity theorem — item 3 below.
+
+Three things follow directly from this form.
 
 1. **Coupling is the mode shape at the source.** Mode $\mathbf{n}$ is
    excited in proportion to $\psi_{\mathbf{n}}(\mathbf{r}_s)$. This is the
