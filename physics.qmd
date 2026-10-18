@@ -6,9 +6,200 @@ Notation used throughout: $f$ = frequency (Hz), $c \approx 343\ \mathrm{m/s}$ =
 speed of sound in air at room temperature, $\lambda = c/f$ = wavelength (m),
 $V$ = room volume (m³), $T_{60}$ = reverberation time (s), $L_x, L_y, L_z$ =
 room dimensions (m), $m$ = partition surface mass (kg/m²), $p$ = acoustic
-pressure (Pa).
+pressure (Pa), $\rho_0 \approx 1.2\ \mathrm{kg/m^3}$ = ambient air density,
+$\mathbf{u}$ = acoustic particle velocity (m/s), $\omega = 2\pi f$ = angular
+frequency (rad/s), $\mathbf{k}$ = wave vector (rad/m) with magnitude
+$k = |\mathbf{k}| = \omega/c = 2\pi/\lambda$. Fields are written as complex
+amplitudes with time dependence $e^{-i\omega t}$, the physical field being
+the real part.
 
-## Modal vs. diffuse regime
+For this room $L_x \times L_y \times L_z = 4.445 \times 3.658 \times
+2.692\ \mathrm{m}$ ($V = 43.8\ \mathrm{m^3}$), with the origin at the S1
+corner on the floor as on the [layout](layout.qmd) page.
+
+## Sound as a pressure field
+
+### Linear acoustics
+
+At the levels of interest (the drone is roughly 60–70 dB SPL, i.e.
+$|p| \sim 10^{-2}\ \mathrm{Pa}$ against an ambient
+$p_0 \approx 10^5\ \mathrm{Pa}$) air is an ideal linear medium. Linearizing
+the Euler and continuity equations about rest, with adiabatic compression
+$p = c^2 \rho'$ ($\rho'$ = density perturbation), gives
+
+$$
+\rho_0 \frac{\partial \mathbf{u}}{\partial t} = -\nabla p,
+\qquad
+\frac{1}{c^2}\frac{\partial p}{\partial t} + \rho_0 \nabla\cdot\mathbf{u}
+= \rho_0\, q(\mathbf{r}, t),
+$$
+
+where $q$ (s⁻¹) is the volume-velocity source density: the rate at which a
+source (a loudspeaker cone, or a vibrating wall) injects volume, per unit
+volume. Eliminating $\mathbf{u}$ yields the inhomogeneous wave equation,
+and at a single frequency the **Helmholtz equation**:
+
+$$
+\nabla^2 p - \frac{1}{c^2}\frac{\partial^2 p}{\partial t^2}
+= -\rho_0 \frac{\partial q}{\partial t}
+\quad\Longrightarrow\quad
+\left(\nabla^2 + k^2\right) p(\mathbf{r}) = i\omega\rho_0\, q(\mathbf{r}).
+$$
+
+Two facts here carry the whole project. First, the equation is **linear**,
+so the field of several sources is the sum of their fields: a loudspeaker
+field equal and opposite to the drone's field at some set of points
+cancels it there exactly. That is all ANC is. Second, pressure is a
+**scalar** field: one microphone measures all of it at a point, and
+cancellation means matching one complex number per point per frequency.
+
+### Plane waves and the wave vector
+
+In free space the source-free equation is solved by plane waves
+
+$$
+p(\mathbf{r}, t) = P\, e^{i(\mathbf{k}\cdot\mathbf{r} - \omega t)},
+\qquad |\mathbf{k}| = \frac{\omega}{c},
+$$
+
+with complex amplitude $P$. The dispersion relation is linear and
+isotropic (air is non-dispersive at these frequencies), so $\mathbf{k}$ is
+free in direction but fixed in magnitude: at 59 Hz,
+$k = 1.08\ \mathrm{rad/m}$ and $\lambda = 5.8\ \mathrm{m}$, longer than
+any dimension of the room. Euler's equation then gives the particle
+velocity
+
+$$
+\mathbf{u} = \frac{\mathbf{k}}{\rho_0\,\omega}\, p
+= \frac{\hat{\mathbf{k}}}{\rho_0 c}\, p,
+$$
+
+parallel to $\mathbf{k}$ (sound is longitudinal) and in phase with $p$ for
+a single travelling wave; $\rho_0 c \approx 412\ \mathrm{Pa\,s/m}$ is the
+characteristic impedance of air. The time-averaged intensity (power flux)
+is $\mathbf{I} = |P|^2 \hat{\mathbf{k}} / (2\rho_0 c)$.
+
+Any single-frequency field in a source-free region can be written as a
+superposition of plane waves with $|\mathbf{k}| = \omega/c$ (an angular
+spectrum). In k-space such a field therefore lives on the sphere of radius
+$\omega/c$, and that sphere is the object to keep in mind for what follows.
+
+### Standing waves and the boundary condition
+
+The walls, floor and ceiling are, to a first approximation, rigid: the
+normal particle velocity vanishes there, so by Euler's equation
+$\partial p / \partial n = 0$ (a Neumann condition). Two counter-propagating
+plane waves along $x$, $e^{ik_x x} + e^{-ik_x x} = 2\cos k_x x$, have
+$\partial_x p \propto \sin k_x x$, which vanishes at $x = 0$; it also
+vanishes at $x = L_x$ only if
+
+$$
+k_x = \frac{n_x \pi}{L_x}, \qquad n_x = 0, 1, 2, \dots
+$$
+
+Rigid walls are therefore **pressure antinodes** and **velocity nodes**.
+The particle velocity of the standing wave, $u_x \propto \sin k_x x$, is
+$90°$ out of phase with $p$ and peaks a quarter wavelength from the wall,
+which is the origin of the passive-absorber argument
+[below](#why-passive-absorption-fails-at-low-frequency).
+
+## Room modes
+
+### Modes as a lattice in k-space
+
+Imposing the condition on all three axes gives the eigenfunctions (mode
+shapes) and eigenfrequencies of the rectangular room,
+
+$$
+\psi_{\mathbf{n}}(\mathbf{r}) = \cos\frac{n_x\pi x}{L_x}\,
+\cos\frac{n_y\pi y}{L_y}\,\cos\frac{n_z\pi z}{L_z},
+\qquad
+\mathbf{k}_{\mathbf{n}} = \pi\left(\frac{n_x}{L_x}, \frac{n_y}{L_y},
+\frac{n_z}{L_z}\right),
+\qquad
+f_{\mathbf{n}} = \frac{c\,|\mathbf{k}_{\mathbf{n}}|}{2\pi},
+$$
+
+labelled by the non-negative integer triple $\mathbf{n} = (n_x, n_y, n_z)$.
+Expanding each cosine into exponentials shows what a mode is physically:
+
+$$
+\psi_{\mathbf{n}}(\mathbf{r}) = \frac{1}{8}
+\sum_{\pm,\pm,\pm} e^{\,i(\pm k_x x \pm k_y y \pm k_z z)},
+$$
+
+a superposition of the plane waves whose wave vectors are the mirror images
+$(\pm k_x, \pm k_y, \pm k_z)$ of $\mathbf{k}_{\mathbf{n}}$, bouncing between
+the walls. An **axial** mode (one nonzero index) is 2 distinct plane waves
+travelling along one axis, a **tangential** mode (two nonzero) is 4 waves in
+a plane, and an **oblique** mode (three nonzero) is 8 waves. The boundary
+condition has turned the continuous sphere of allowed $\mathbf{k}$ into a
+rectangular lattice with spacings $\pi/L_x$, $\pi/L_y$, $\pi/L_z$. It is
+the same mathematics as a particle in a box, with Neumann rather than
+Dirichlet walls (so index 0 is allowed).
+
+![The $(k_x, k_y)$ plane of the room's mode lattice (the same in-plane
+lattice repeats for each $n_z$). A drive at frequency $f$ sits on the shell
+$|\mathbf{k}| = 2\pi f/c$; modes whose lattice points lie near that shell
+respond resonantly. For $n_z = 1$ the shell's in-plane radius shrinks to
+$\sqrt{k^2 - (\pi/L_z)^2}$, which is real only above
+$f_{001} = 63.7$ Hz, so at 39.9 and 59 Hz only $n_z = 0$ modes lie inside
+the shell. Generated by
+[`scripts/physics_figures.py`](https://github.com/madi-lts/roomANC/blob/master/scripts/physics_figures.py).](images/k-lattice.png){#fig-k-lattice}
+
+Reading @fig-k-lattice: the 39.9 Hz shell passes almost through (1,0,·),
+so at that tone the room is essentially one axial mode; the 59 Hz shell
+lies between (1,1,0) at 60.7 Hz and the vertical axial (0,0,1) at 63.7 Hz
+(off this plane, not drawn); the 120 Hz shells thread a cluster of four
+modes. The full mode table is on the [Modes](modes.qmd) page.
+
+### Mode counting and the modal regime
+
+Each lattice point occupies a k-space volume $\pi^3/V$, so the number of
+modes below $f$ is, to leading order, the volume of the sphere's positive
+octant divided by that cell volume (Weyl's law). Surface and edge
+corrections enter because the lattice includes its boundary planes
+($n_i = 0$):
+
+$$
+N(f) \approx \frac{4\pi V f^3}{3c^3} + \frac{\pi S f^2}{4c^2}
++ \frac{L f}{8c},
+$$
+
+where $S = 2(L_xL_y + L_yL_z + L_zL_x) = 76.1\ \mathrm{m^2}$ is the total
+surface area and $L = 4(L_x + L_y + L_z) = 43.2\ \mathrm{m}$ the total edge
+length. For this room $N(150\ \mathrm{Hz}) \approx 29$, matching the exact
+count of 29 on the [Modes](modes.qmd) page, and only 2 modes lie below
+60 Hz. The density $dN/df$ grows as $f^2$; once the spacing between
+neighbouring modes falls below their bandwidth $\Delta f$ the modes overlap
+and the individual lattice points stop mattering. That crossover is the
+Schroeder frequency of the [next section](#modal-vs-diffuse-regime).
+
+### Pressure in a mode: antinodes, nodes and orthogonality
+
+Three properties of $\psi_{\mathbf{n}}$ are used throughout the site:
+
+- **Corners are universal antinodes.** At any corner every cosine is
+  $\pm 1$, so $|\psi_{\mathbf{n}}| = 1$ for every mode. Corners (and, more
+  weakly, edges and walls) are where the room is loudest.
+- **Parity and nodal planes.** Reflection through the mid-plane
+  $x \to L_x - x$ multiplies $\psi_{\mathbf{n}}$ by $(-1)^{n_x}$. Every mode
+  with odd $n_x$ is therefore odd about $x = L_x/2$ and vanishes on that
+  whole plane; likewise for $y$ and $z$. The mid-planes are the most
+  important nodal surfaces in the room because they belong to all of the
+  lowest modes.
+- **Orthogonality.** $\int_V \psi_{\mathbf{m}} \psi_{\mathbf{n}}\, dV =
+  \Lambda_{\mathbf{n}} V \delta_{\mathbf{mn}}$ with
+  $\Lambda_{\mathbf{n}} = \prod_i \varepsilon_{n_i}$, where
+  $\varepsilon_0 = 1$ and $\varepsilon_{n>0} = 1/2$. Any pressure field in
+  the room can be expanded as $p = \sum_{\mathbf{n}} A_{\mathbf{n}}
+  \psi_{\mathbf{n}}$, and its time-averaged acoustic potential energy is a
+  sum over modes, $E_p = \frac{V}{4\rho_0c^2} \sum_{\mathbf{n}}
+  \Lambda_{\mathbf{n}} |A_{\mathbf{n}}|^2$. This is the precise sense in
+  which cancelling a mode is a global statement about the room.
+
+
+## Modal vs. diffuse regime {#modal-vs-diffuse-regime}
 
 The character of a room's sound field changes at the **Schroeder frequency**
 
@@ -35,6 +226,154 @@ the modal regime. This is the single most important fact about the project:
 10–20 dB reduction at the tones across most of the room and little effect on
 broadband content. Car-cabin engine-order cancellation is the commercial
 precedent for exactly this configuration.
+
+## Driving the room: point sources and mode coupling
+
+### The modal Green's function
+
+A subwoofer at $\lambda \approx 3$–$9\ \mathrm{m}$ is acoustically a point
+monopole: its cabinet is much smaller than a wavelength, so it is a volume
+velocity $Q_s$ (m³/s) injected at its position $\mathbf{r}_s$,
+$q = Q_s\, \delta(\mathbf{r} - \mathbf{r}_s)$. Expanding
+$p = \sum_{\mathbf{n}} A_{\mathbf{n}} \psi_{\mathbf{n}}$ in the Helmholtz
+equation, using $\nabla^2 \psi_{\mathbf{n}} = -k_{\mathbf{n}}^2
+\psi_{\mathbf{n}}$, and projecting onto $\psi_{\mathbf{n}}$ with the
+orthogonality relation gives each modal amplitude:
+
+$$
+A_{\mathbf{n}} = \frac{-i\omega\rho_0\, Q_s}{\Lambda_{\mathbf{n}} V}\;
+\frac{\psi_{\mathbf{n}}(\mathbf{r}_s)}
+{k_{\mathbf{n}}^2 - k^2 - i\,k\,k_{\mathbf{n}}/Q_{\mathbf{n}}},
+$$
+
+so that the pressure at a receiver $\mathbf{r}$ is
+
+$$
+p(\mathbf{r}) = -i\omega\rho_0\, Q_s \sum_{\mathbf{n}}
+\frac{\psi_{\mathbf{n}}(\mathbf{r})\,\psi_{\mathbf{n}}(\mathbf{r}_s)}
+{\Lambda_{\mathbf{n}} V\left(k_{\mathbf{n}}^2 - k^2 - i\,k\,k_{\mathbf{n}}/Q_{\mathbf{n}}\right)}.
+$$
+
+Here $Q_{\mathbf{n}} = f_{\mathbf{n}}/\Delta f$ is the modal quality factor
+(wall and furnishing losses, added phenomenologically; with the assumed
+$T_{60} = 0.4$ s, $\Delta f \approx 5.5$ Hz and $Q \approx 7$–$27$ across
+the band), and the sum is the same damped modal sum the
+[Modes](modes.qmd#model) page evaluates numerically. Three things follow
+directly from its form.
+
+1. **Coupling is the mode shape at the source.** Mode $\mathbf{n}$ is
+   excited in proportion to $\psi_{\mathbf{n}}(\mathbf{r}_s)$. This is the
+   same selection rule as an atom in a cavity, whose coupling to a cavity
+   mode is $g(\mathbf{r}) \propto \psi(\mathbf{r}_{\text{atom}})$: placed on
+   a node, it does not see that mode however well tuned.
+2. **Tuning supplies gain, position supplies access.** Driving at
+   $\omega \to \omega_{\mathbf{n}}$ enhances mode $\mathbf{n}$ by roughly
+   $Q_{\mathbf{n}}$ over its off-resonant neighbours, so a source does
+   preferentially drive the mode it is tuned to, provided
+   $\psi_{\mathbf{n}}(\mathbf{r}_s) \neq 0$. With $Q \sim 10$ the
+   selectivity is modest: at 59 Hz both (1,1,0) (1.7 Hz away) and (0,0,1)
+   (4.7 Hz away) sit within one bandwidth, plus an off-resonant background
+   from every other mode.
+3. **Reciprocity.** The kernel is symmetric in $\mathbf{r}$ and
+   $\mathbf{r}_s$. Swapping source and receiver gives the same transfer
+   function, so a microphone *observes* mode $\mathbf{n}$ in proportion to
+   $\psi_{\mathbf{n}}(\mathbf{r}_{\text{mic}})$ by exactly the argument that
+   makes a speaker *drive* it in proportion to $\psi_{\mathbf{n}}(\mathbf{r}_s)$.
+   The secondary paths the controller identifies (speaker $s$ to mic $m$)
+   are $H_{ms}(\omega) = \sum_{\mathbf{n}} \psi_{\mathbf{n}}(\mathbf{r}_m)\,
+   D_{\mathbf{n}}(\omega)\, \psi_{\mathbf{n}}(\mathbf{r}_s)$, with
+   $D_{\mathbf{n}}$ the resonant denominator above: the geometry of the
+   speakers and of the mics enter symmetrically, which is why the
+   [observability analysis](modes.qmd#observability-of-the-6-mic-array) of
+   the mics and the placement of the subs use the same matrix of
+   $\psi_{\mathbf{n}}$ values.
+
+### Where a source can and cannot couple
+
+![Floor-plane mode shapes for one mode under each target tone.
+Dashed lines: nodal lines. Squares: subwoofer corners S1–S4 (filled = the
+current diagonal pair). Diamonds: mid-wall points and the floor centre.
+Stars: pillow points. A source on a dashed line cannot drive that mode;
+every corner sits on $|\psi| = 1$ of every mode.](images/mode-coupling.png){#fig-mode-coupling}
+
+The parity rule makes the candidate positions easy to score. A point on
+the mid-plane $x = L_x/2$ cannot drive any odd-$n_x$ mode, and a mid-wall
+or floor-centre point lies on **two** such mid-planes. The couplings
+$\psi_{\mathbf{n}}(\mathbf{r}_s)$ for the modes nearest the target tones:
+
+| Mode | $f_{\mathbf{n}}$ (Hz) | Near tone | Corner | Mid-wall $x=0$ $(0, \tfrac{L_y}{2}, \tfrac{L_z}{2})$ | Mid-wall $y=0$ $(\tfrac{L_x}{2}, 0, \tfrac{L_z}{2})$ | Floor centre $(\tfrac{L_x}{2}, \tfrac{L_y}{2}, 0)$ | Pillows |
+|---|---:|---|---:|---:|---:|---:|---|
+| (1,0,0) | 38.6 | 39.9 | ±1 | 1 | 0 | 0 | −0.40, −0.74 |
+| (0,1,0) | 46.9 | — | ±1 | 0 | 1 | 0 | −0.96, −0.96 |
+| (1,1,0) | 60.7 | 59.0 | ±1 | 0 | 0 | 0 | 0.38, 0.71 |
+| (0,0,1) | 63.7 | 59.0 | ±1 | 0 | 0 | 1 | 0.73, 0.73 |
+| (3,0,0) | 115.7 | 117.9 | ±1 | 1 | 0 | 0 | 0.94, 0.60 |
+| (1,2,1) | 119.7 | 120.0 | ±1 | 0 | 0 | 0 | −0.24, −0.44 |
+| (2,2,0) | 121.4 | 120.0 | ±1 | −1 | −1 | 1 | −0.57, 0.08 |
+
+(Pillow points $(2.80, 3.31, 0.65)$ and $(3.40, 3.31, 0.65)$ m.) Because
+every coordinate of the mid-wall and centre points is $0$ or $L/2$, their
+couplings are exactly $0$ or $\pm 1$: a mid-wall source is a clean
+single-axis drive at the lowest frequencies, but every mode with **two or
+more odd indices** is invisible to all three of them. That includes
+(1,1,0), the resonance under the 59 Hz drone, and (1,2,1) at 120 Hz, both
+of which are loud at the pillows. A set of mid-wall and centre subs
+therefore cannot control the drone at all through its dominant mode,
+whatever their number or tuning.
+
+A corner couples to everything, and the real cabinets, pushed into the
+corners with their centres about 0.35 m from each wall and the driver
+near the floor, keep $|\psi_{\mathbf{n}}(\mathbf{r}_s)| \geq 0.9$ for the
+four modes below 65 Hz and $\geq 0.6$ for every mode to 150 Hz. That is
+the physical basis of corner loading on the [Layout](layout.qmd) page.
+
+### How many sources, and where
+
+Write the field near tone $\omega$ in terms of the $M$ modes that matter
+there (the near-resonant ones, plus the off-resonant background if the
+target is local). Each source $s$ contributes the column
+$b_s = \big(\psi_{\mathbf{n}}(\mathbf{r}_s)\, D_{\mathbf{n}}(\omega)\big)_{\mathbf{n}}$
+to an $M \times N_s$ coupling matrix $B$, and the controller chooses the
+complex source strengths $\mathbf{Q}$ to cancel the primary amplitudes
+$\mathbf{A}^{p}$:
+
+$$
+\mathbf{A}^{p} + B\,\mathbf{Q} = 0 .
+$$
+
+Global cancellation of those $M$ modes needs $\operatorname{rank} B = M$,
+and in practice a well-conditioned $B$: the drive needed scales as
+$1/\sigma_{\min}(B)$, and so does the sensitivity to secondary-path errors.
+So the requirement is at least $M$ sources, each placed off the nodal
+surfaces of the modes in question, with **linearly independent coupling
+vectors**. More sources buy independent control and conditioning, not
+reach: a source with zero coupling to a mode adds nothing for it.
+
+Symmetric source placements can fail the independence test even at
+corners. The corner couplings differ only in sign, $(-1)^{n_x i_x + n_y i_y
++ n_z i_z}$ for the corner at $(i_x L_x, i_y L_y, i_z L_z)$, and the two
+floor corners of a diagonal pair, S1 at $(0,0)$ and S4 at $(L_x, L_y)$,
+have identical signs for every mode with $n_x + n_y$ even. At 59 Hz that
+is **both** (1,1,0) and (0,0,1), so their coupling vectors restricted to
+those two modes are parallel: the diagonal pair can null whichever
+combination the primary field presents at two chosen points (it has the
+off-resonant (1,0,0) and (0,1,0) as a lever, which it drives
+differentially), but it cannot set the two dominant 59 Hz modes
+independently over the whole room. An adjacent pair (S1 + S2 or S1 + S3)
+has opposite signs on (1,1,0) and equal signs on (0,0,1), so it spans
+both; so does any three or four corners.
+
+### Where the room is loud, and where the bed sits
+
+The same mode shapes say where the listener is. The bed head is against a
+wall, i.e. on a pressure antinode of every mode with $n_y \geq 1$, and the
+pillow columns of the table above are correspondingly large. Moving the
+head toward a mid-plane removes the odd modes along that axis passively
+(the [recommended bed placement](modes.qmd#recommended-bed-placement)
+exploits $x \approx L_x/2$ against (1,0,0) and (1,1,0)); what remains, such
+as (0,0,1) whose nodal plane is at $z = L_z/2 = 1.35$ m, is what the
+actuators must handle, and the measured level-vs-position map is the
+ground truth that pins down the real nodal surfaces.
 
 ## Why passive absorption fails at low frequency
 
@@ -81,24 +420,3 @@ source (landlord track: spring/elastomer mounts under the rooftop units and
 pumps). ANC still works against the re-radiated field regardless of the
 path, because it cancels the in-room pressure directly — another reason it
 is the primary mitigation here.
-
-## Modal geometry: where the room is loud
-
-A rigid wall enforces zero normal particle velocity, which makes it a
-**pressure antinode**. For the lowest axial mode along a dimension $L$, the
-pressure distribution is
-
-$$
-p(x) \propto \cos\!\left(\frac{\pi x}{L}\right),
-$$
-
-maximal at the walls ($x = 0, L$) and null at midroom ($x = L/2$).
-Corners, where three axial families meet, are the loudest points in the
-room. Practical consequences:
-
-- A **bed against a wall sits at a pressure maximum** — moving it toward the
-  room center can help by itself, but true quiet zones for the actual drone
-  frequencies must be found empirically (the measured level-vs-position map
-  in the spec's verification plan).
-- Conversely, **corner placement maximally couples a subwoofer to all
-  modes**, which is why the actuators go in corners.
